@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    /*signingConfigs {
+        config {
+            keyAlias 'NotedOKKey'
+            keyPassword 'YA1[5]ELzpm0qu(EnMaE5cHo'
+            storeFile file('D:/Dropbox/_development/android_key_store/notedok.jks')
+            storePassword 'iD6OMt4ffe9cHeJHSG0jdF9q'
+        }
+    }*/
     compileSdkVersion 24
     buildToolsVersion "24.0.0"
 
@@ -13,14 +21,15 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            debuggable false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:design:24.0.0'
