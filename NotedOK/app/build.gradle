@@ -1,14 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-/*    signingConfigs {
-        config {
-            keyAlias 'NotedOKKey'
-            keyPassword 'YA1[5]ELzpm0qu(EnMaE5cHo'
-            storeFile file('C:/Users/Akondratyev/Dropbox/_development/android_key_store/notedok.jks')
-            storePassword 'iD6OMt4ffe9cHeJHSG0jdF9q'
-        }
-    }*/
     compileSdkVersion 24
     buildToolsVersion "24.0.0"
 
@@ -16,7 +8,7 @@ android {
         applicationId "com.notedok.notedok"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 1
+        versionCode 2
         versionName "1.0"
     }
     buildTypes {
