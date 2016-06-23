@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    /*signingConfigs {
+/*    signingConfigs {
         config {
             keyAlias 'NotedOKKey'
             keyPassword 'YA1[5]ELzpm0qu(EnMaE5cHo'
-            storeFile file('D:/Dropbox/_development/android_key_store/notedok.jks')
+            storeFile file('C:/Users/Akondratyev/Dropbox/_development/android_key_store/notedok.jks')
             storePassword 'iD6OMt4ffe9cHeJHSG0jdF9q'
         }
     }*/
