@@ -60,7 +60,17 @@ public class NoteListActivity extends AppCompatActivity {
 
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
         if (dropboxStorage != null) {
-            List<String> files = dropboxStorage.retrieveFileList();
+            OnSuccess<String[]> onSuccess = new OnSuccess<String[]>() {
+                @Override
+                public void call(String[] result) {
+                }
+            };
+            OnError onError = new OnError() {
+                @Override
+                public void call(Exception e) {
+                }
+            };
+            dropboxStorage.retrieveFileList(null, onSuccess, onError);
         }
     }
 }

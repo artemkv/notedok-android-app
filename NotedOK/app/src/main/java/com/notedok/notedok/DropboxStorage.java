@@ -1,10 +1,8 @@
 package com.notedok.notedok;
 
-import android.util.Log;
-
-import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.ListFolderResult;
+import com.dropbox.core.v2.files.Metadata;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,23 +22,33 @@ public class DropboxStorage {
         _dropboxClient = dropboxClient;
     }
 
-    public List<String> retrieveFileList() {
-        List<String> files = new LinkedList<>();
+    public void retrieveFileList(String searchString, OnSuccess<String[]> onSuccess, OnError onError) {
+        final String searchStringLocal = searchString;
 
-        files.add("/note1.txt");
-        files.add("/note2.txt");
-        files.add("/note3.txt");
-
-        new DropboxAsyncTask(_dropboxClient, new DropboxAsyncTask.Callback() {
+        AsyncWorkerTask.Worker<String[]> worker = new AsyncWorkerTask.Worker<String[]>() {
             @Override
-            public void onComplete(String[] result) {
-            }
+            public String[] getResult() {
+                try {
+                    List<String> filePaths = new LinkedList<>();
 
-            @Override
-            public void onError(Exception e) {
-            }
-        }).execute();
+                    // TODO: or empty string
+                    if (searchStringLocal == null) {
+                        ListFolderResult result = _dropboxClient.files().listFolder("");
+                        List<Metadata> metadata = result.getEntries();
+                        for (int i = 0; i < metadata.size(); i++) {
+                            filePaths.add(metadata.get(i).getName());
+                        }
+                    } else {
+                        filePaths.add("search results");
+                    }
 
-        return files;
+                    return filePaths.toArray(new String[0]);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        new AsyncWorkerTask<String[]>(worker, onSuccess, onError).execute();
     }
 }
