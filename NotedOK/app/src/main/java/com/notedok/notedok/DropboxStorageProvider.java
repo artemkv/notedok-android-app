@@ -11,33 +11,60 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 // TODO: make singleton
-public class DropboxStorageProvider {
+
+/**
+ * Constructs and stores an instance of DropboxStorage.
+ * Handles the Dropbox authentication.
+ */
+public final class DropboxStorageProvider {
+    // To obtain the token from Dropbox
+    final static private String APP_KEY = "y9i1eshn74yuenq";
+
+    // To cache the token
     final static private String PREFERENCES_FILE_NAME = "notedok-preferences";
     final static private String TOKEN_KEY = "dropbox-access-token";
 
-    final static private String APP_KEY = "y9i1eshn74yuenq";
-
+    // Here the token is cached
     private static SharedPreferences SharedPreferences;
+
+    // The storage that this provider provides
     private static DropboxStorage DropboxStorage;
 
-    public static void startOAuth2Authentication(AppCompatActivity activity) {
+    /**
+     * Initializes the storage provider.
+     * @param activity The activity that initializes a provider.
+     */
+    public static void initialize(AppCompatActivity activity) {
+        // Save preferences
         SharedPreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME, activity.MODE_PRIVATE);
-        Auth.startOAuth2Authentication(activity, APP_KEY);
+
+        // If there is no token, initialize authentication flow
+        String accessToken = SharedPreferences.getString(TOKEN_KEY, null);
+        if (accessToken == null) {
+            Auth.startOAuth2Authentication(activity, APP_KEY);
+        }
     }
 
-    // TODO: at this point client must check whether the storage could be returned. If it is null, it must try again later
+    /**
+     * Returns the Dropbox storage to access the notes.
+     * If the Dropbox storage is not initialized (authentication is not finished), returns null.
+     * @return Dropbox storage if initialized; otherwise, null.
+     */
     public static DropboxStorage getDropboxStorage() {
+        // TODO: check whether initialized
+
         if (DropboxStorage == null) {
-            DbxClientV2 client = getClient();
+            DbxClientV2 client = getDropboxClient();
             if (client != null) {
                 DropboxStorage = new DropboxStorage(client);
             }
+            // TODO: else return offline storage
         }
 
         return DropboxStorage;
     }
 
-    private static DbxClientV2 getClient() {
+    private static DbxClientV2 getDropboxClient() {
         // Try getting saved token
         String accessToken = SharedPreferences.getString(TOKEN_KEY, null);
         if (accessToken == null) {
@@ -60,7 +87,6 @@ public class DropboxStorageProvider {
                 return new DbxClientV2(requestConfig, accessToken);
             } catch (Exception e) {
                 // TODO: where to see this message?
-                // TODO: App crashes
                 Log.i("DropboxAccess", "Error creating dropbox client", e);
             }
         }

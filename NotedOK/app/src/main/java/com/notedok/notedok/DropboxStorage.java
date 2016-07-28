@@ -9,6 +9,10 @@ import com.dropbox.core.v2.files.ListFolderResult;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Abstracts actual calls to Dropbox client.
+ * Provides business-logic oriented high-level methods.
+ */
 public class DropboxStorage {
     private DbxClientV2 _dropboxClient;
 
@@ -21,20 +25,21 @@ public class DropboxStorage {
     }
 
     public List<String> retrieveFileList() {
-        List<String> files = new LinkedList<String>();
+        List<String> files = new LinkedList<>();
 
         files.add("/note1.txt");
         files.add("/note2.txt");
         files.add("/note3.txt");
 
-        try {
-            // TODO: continue...
-            // TODO: calling client before the authentication was confirmed will crash the app
-            //ListFolderResult result = _dropboxClient.files().listFolder("/");
-        } catch (/*Dbx*/Exception e) {
-            // TODO: does not seem to catch anything, just crashes
-            Log.i("DropboxAccess", "Error getting list of files", e);
-        }
+        new DropboxAsyncTask(_dropboxClient, new DropboxAsyncTask.Callback() {
+            @Override
+            public void onComplete(String[] result) {
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+        }).execute();
 
         return files;
     }

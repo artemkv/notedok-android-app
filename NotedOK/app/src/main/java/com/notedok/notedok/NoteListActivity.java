@@ -16,7 +16,7 @@ public class NoteListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Initialize Dropbox authentication
-        DropboxStorageProvider.startOAuth2Authentication(NoteListActivity.this);
+        DropboxStorageProvider.initialize(NoteListActivity.this);
 
         setContentView(R.layout.activity_note_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
