@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
@@ -18,10 +20,19 @@ public class NoteListActivity extends AppCompatActivity {
         // Initialize Dropbox authentication
         DropboxStorageProvider.initialize(NoteListActivity.this);
 
+        // Set context
         setContentView(R.layout.activity_note_list);
+
+        // Set up recycler view
+        RecyclerView notesView = (RecyclerView)findViewById(R.id.notes_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        notesView.setLayoutManager(layoutManager);
+
+        // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Set up buttons
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
