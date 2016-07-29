@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import java.util.List;
 
 public class NoteListActivity extends AppCompatActivity {
     @Override
@@ -25,8 +24,46 @@ public class NoteListActivity extends AppCompatActivity {
 
         // Set up recycler view
         RecyclerView notesView = (RecyclerView)findViewById(R.id.notes_view);
+
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        notesView.setHasFixedSize(true);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         notesView.setLayoutManager(layoutManager);
+
+        // TODO: this is fake data, replace real stuff
+        String[] fileList = new String[] {
+                "aaa",
+                "bbb",
+                "ccc",
+                "ddd",
+                "eee",
+                "fff",
+                "ggg",
+                "hhh",
+                "iii",
+                "jjj",
+                "kkk",
+                "lll",
+                "mmm",
+                "nnn",
+                "ooo",
+                "ppp",
+                "qqq",
+                "rrr",
+                "sss",
+                "ttt",
+                "uuu",
+                "vvv",
+                "www",
+                "xxx",
+                "yyy",
+                "zzz"
+        };
+
+        NotesViewAdapter notesViewAdapter = new NotesViewAdapter(fileList);
+        notesView.setAdapter(notesViewAdapter);
 
         // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
