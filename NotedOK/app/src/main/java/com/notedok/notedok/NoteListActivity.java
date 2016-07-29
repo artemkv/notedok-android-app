@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class NoteListActivity extends AppCompatActivity {
+    private RecyclerView _notesView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,17 +25,17 @@ public class NoteListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note_list);
 
         // Set up recycler view
-        RecyclerView notesView = (RecyclerView)findViewById(R.id.notes_view);
+        _notesView = (RecyclerView)findViewById(R.id.notes_view);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        notesView.setHasFixedSize(true);
+        _notesView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        notesView.setLayoutManager(layoutManager);
+        _notesView.setLayoutManager(layoutManager);
 
         // TODO: this is fake data, replace real stuff
-        String[] fileList = new String[] {
+/*        String[] fileList = new String[] {
                 "aaa",
                 "bbb",
                 "ccc",
@@ -61,9 +63,7 @@ public class NoteListActivity extends AppCompatActivity {
                 "yyy",
                 "zzz"
         };
-
-        NotesViewAdapter notesViewAdapter = new NotesViewAdapter(fileList);
-        notesView.setAdapter(notesViewAdapter);
+        refreshNotes(fileList);*/
 
         // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -111,6 +111,7 @@ public class NoteListActivity extends AppCompatActivity {
             OnSuccess<String[]> onSuccess = new OnSuccess<String[]>() {
                 @Override
                 public void call(String[] result) {
+                    refreshNotes(result);
                 }
             };
             OnError onError = new OnError() {
@@ -120,5 +121,10 @@ public class NoteListActivity extends AppCompatActivity {
             };
             dropboxStorage.retrieveFileList(null, onSuccess, onError);
         }
+    }
+
+    private void refreshNotes(String[] fileList) {
+        NotesViewAdapter notesViewAdapter = new NotesViewAdapter(fileList);
+        _notesView.setAdapter(notesViewAdapter);
     }
 }
