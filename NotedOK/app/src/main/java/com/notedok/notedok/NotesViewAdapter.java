@@ -49,8 +49,33 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
      */
     @Override
     public void onBindViewHolder(NoteViewHolder viewHolder, int index) {
+        final NoteViewHolder viewHolderLocal = viewHolder;
+
         // TODO: Render the whole note
-        viewHolder.TitleTextView.setText(_fileList[index]); // TODO: use method instead of setting public field
+        // TODO: think it better, when and who constructs notes, where to store them
+        Note note = new Note();
+        note.Path = _fileList[index];
+
+        viewHolderLocal.CardView.setHasTransientState(true);
+        viewHolderLocal.TitleTextView.setText(_fileList[index]);
+        viewHolderLocal.TextTextView.setText("loading...");
+
+        OnSuccess<String> onSuccess = new OnSuccess<String>() {
+            @Override
+            public void call(String result) {
+                viewHolderLocal.TextTextView.setText(result); // TODO: use method instead of setting public field
+            }
+        };
+        OnError onError = new OnError() {
+            @Override
+            public void call(Exception e) {
+            }
+        };
+
+        DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+        if (dropboxStorage != null) {
+            dropboxStorage.getNoteContent(note, onSuccess, onError);
+        }
     }
 
     /**
