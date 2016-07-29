@@ -5,6 +5,9 @@ import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,7 +40,7 @@ public class DropboxStorage {
                         ListFolderResult result = _dropboxClient.files().listFolder("");
                         List<Metadata> metadata = result.getEntries();
                         for (int i = 0; i < metadata.size(); i++) {
-                            filePaths.add(metadata.get(i).getName());
+                            filePaths.add("/" + metadata.get(i).getName());
                         }
                     } else {
                         filePaths.add("search results");
@@ -51,5 +54,24 @@ public class DropboxStorage {
         };
 
         new AsyncWorkerTask<String[]>(worker, onSuccess, onError).execute();
+    }
+
+    public void getNoteContent(Note note, OnSuccess<String> onSuccess, OnError onError) {
+        final Note noteLocal = note;
+
+        AsyncWorkerTask.Worker<String> worker = new AsyncWorkerTask.Worker<String>() {
+            @Override
+            public String getResult() {
+                try {
+                    OutputStream stream = new ByteArrayOutputStream();
+                    _dropboxClient.files().download(noteLocal.Path).download(stream);
+                    return stream.toString();
+                } catch (DbxException | IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        new AsyncWorkerTask<String>(worker, onSuccess, onError).execute();
     }
 }
