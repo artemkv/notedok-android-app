@@ -1,6 +1,5 @@
 package com.notedok.notedok;
 
-import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.http.OkHttp3Requestor;
@@ -10,19 +9,17 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-// TODO: make singleton
-
 /**
  * Constructs and stores an instance of DropboxStorage.
  * Handles the Dropbox authentication.
  */
 public final class DropboxStorageProvider {
     // To obtain the token from Dropbox
-    final static private String APP_KEY = "y9i1eshn74yuenq";
+    final private static String APP_KEY = "y9i1eshn74yuenq";
 
     // To cache the token
-    final static private String PREFERENCES_FILE_NAME = "notedok-preferences";
-    final static private String TOKEN_KEY = "dropbox-access-token";
+    final private static String PREFERENCES_FILE_NAME = "notedok-preferences";
+    final private static String TOKEN_KEY = "dropbox-access-token";
 
     // Here the token is cached
     private static SharedPreferences SharedPreferences;
@@ -30,11 +27,16 @@ public final class DropboxStorageProvider {
     // The storage that this provider provides
     private static DropboxStorage DropboxStorage;
 
+    // Guards against using the class without initialization
+    private static boolean Initialized = false;
+
     /**
      * Initializes the storage provider.
      * @param activity The activity that initializes a provider.
      */
     public static void initialize(AppCompatActivity activity) {
+        Initialized = true;
+
         // Save preferences
         SharedPreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME, activity.MODE_PRIVATE);
 
@@ -51,7 +53,9 @@ public final class DropboxStorageProvider {
      * @return Dropbox storage if initialized; otherwise, null.
      */
     public static DropboxStorage getDropboxStorage() {
-        // TODO: check whether initialized
+        if (!Initialized) {
+            throw new IllegalStateException("The class is not initialized. Call initialize first.");
+        }
 
         if (DropboxStorage == null) {
             DbxClientV2 client = getDropboxClient();
@@ -86,7 +90,6 @@ public final class DropboxStorageProvider {
                         .build();
                 return new DbxClientV2(requestConfig, accessToken);
             } catch (Exception e) {
-                // TODO: where to see this message?
                 Log.i("DropboxAccess", "Error creating dropbox client", e);
             }
         }

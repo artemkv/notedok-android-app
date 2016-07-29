@@ -1,5 +1,6 @@
 package com.notedok.notedok;
 
+import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
@@ -43,7 +44,7 @@ public class DropboxStorage {
                     }
 
                     return filePaths.toArray(new String[0]);
-                } catch (Exception e) {
+                } catch (DbxException e) {
                     throw new RuntimeException(e);
                 }
             }
