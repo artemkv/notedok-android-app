@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.NoteViewHolder> {
     private String[] _fileList;
+    private int _visibleNotesTotal = 0;
 
     public static class NoteViewHolder extends RecyclerView.ViewHolder {
         public CardView CardView;
@@ -33,6 +34,14 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
             throw new IllegalArgumentException("fileList");
         }
         _fileList = fileList;
+        loadNextPage();
+    }
+
+    public void loadNextPage() {
+        _visibleNotesTotal += 5; // TODO: constant
+        if (_visibleNotesTotal > _fileList.length) {
+            _visibleNotesTotal = _fileList.length;
+        }
     }
 
     /**
@@ -80,6 +89,14 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
         if (dropboxStorage != null) {
             dropboxStorage.getNoteContent(note, onSuccess, onError);
         }
+
+        // If reached the last visible note, load the next five
+        if (index == _visibleNotesTotal - 1) {
+            loadNextPage();
+            // This call is apparently not needed. Moreover, when called throws an exception
+            // as it is busy at this moment scrolling/re-drawing the view.
+            //this.notifyDataSetChanged();
+        }
     }
 
     /**
@@ -88,6 +105,6 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
      */
     @Override
     public int getItemCount() {
-        return _fileList.length;
+        return _visibleNotesTotal;
     }
 }
