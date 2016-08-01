@@ -3,4 +3,10 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="card_height">180dp</dimen>
+    <dimen name="cards_margin">4dp</dimen>
+    <dimen name="cards_padding">12dp</dimen>
+    <dimen name="note_title_padding">8dp</dimen>
+    <dimen name="note_title_text_size">22sp</dimen>
+    <dimen name="note_text_text_size">16sp</dimen>
 </resources>
