@@ -91,9 +91,6 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
             // If reached the last visible note, load the next five
             if (index == _visibleNotesTotal - 1) {
                 loadNextPage();
-                // This call is apparently not needed. Moreover, when called throws an exception
-                // as it is busy at this moment scrolling/re-drawing the view.
-                //this.notifyDataSetChanged();
             }
         }
     }
