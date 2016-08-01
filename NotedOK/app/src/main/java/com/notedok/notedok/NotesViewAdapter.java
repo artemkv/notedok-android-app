@@ -34,6 +34,7 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
             throw new IllegalArgumentException("fileList");
         }
         _fileList = fileList;
+        NoteCache.getInstance().clear();
         loadNextPage();
     }
 
@@ -64,38 +65,36 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
     public void onBindViewHolder(NoteViewHolder viewHolder, int index) {
         final NoteViewHolder viewHolderLocal = viewHolder;
 
-        // TODO: think it better, when and who constructs notes, where to store them
-        final Note note = new Note();
-        note.Path = _fileList[index];
-        note.Title = note.Path; // TODO: make the title from the path
-        note.Text = "loading..."; // TODO: ?
-
+        final Note note = NoteCache.getInstance().getNote(_fileList[index]);
         viewHolderLocal.bindToNote(note);
 
-        OnSuccess<String> onSuccess = new OnSuccess<String>() {
-            @Override
-            public void call(String result) {
-                note.Text = result;
-                viewHolderLocal.bindToNote(note);
-            }
-        };
-        OnError onError = new OnError() {
-            @Override
-            public void call(Exception e) {
-            }
-        };
+        if (!note.IsLoaded) {
+            OnSuccess<String> onSuccess = new OnSuccess<String>() {
+                @Override
+                public void call(String result) {
+                    note.Text = result;
+                    note.IsLoaded = true;
+                    viewHolderLocal.bindToNote(note);
+                }
+            };
+            OnError onError = new OnError() {
+                @Override
+                public void call(Exception e) {
+                }
+            };
 
-        DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
-        if (dropboxStorage != null) {
-            dropboxStorage.getNoteContent(note, onSuccess, onError);
-        }
+            DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+            if (dropboxStorage != null) {
+                dropboxStorage.getNoteContent(note, onSuccess, onError);
+            }
 
-        // If reached the last visible note, load the next five
-        if (index == _visibleNotesTotal - 1) {
-            loadNextPage();
-            // This call is apparently not needed. Moreover, when called throws an exception
-            // as it is busy at this moment scrolling/re-drawing the view.
-            //this.notifyDataSetChanged();
+            // If reached the last visible note, load the next five
+            if (index == _visibleNotesTotal - 1) {
+                loadNextPage();
+                // This call is apparently not needed. Moreover, when called throws an exception
+                // as it is busy at this moment scrolling/re-drawing the view.
+                //this.notifyDataSetChanged();
+            }
         }
     }
 
