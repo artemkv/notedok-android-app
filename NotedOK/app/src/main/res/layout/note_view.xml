@@ -28,7 +28,7 @@
             android:layout_below="@+id/note_title"
             android:padding="@dimen/note_title_padding"
             android:textSize="@dimen/note_text_text_size"
-            android:textColor="@color/colorTitle"/>
+            android:textColor="@color/colorText"/>
 
     </RelativeLayout>
 
