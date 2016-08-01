@@ -12,15 +12,19 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
 
     public static class NoteViewHolder extends RecyclerView.ViewHolder {
         public CardView CardView;
-        public TextView TitleTextView;
-        public TextView TextTextView;
 
         public NoteViewHolder(View view) {
             super(view);
-
             CardView = (CardView)view.findViewById(R.id.note_view);
-            TitleTextView = (TextView)view.findViewById(R.id.note_title);
-            TextTextView = (TextView)view.findViewById(R.id.note_text);
+        }
+
+        public void bindToNote(Note note) {
+
+            TextView TitleTextView = (TextView)CardView.findViewById(R.id.note_title);
+            TitleTextView.setText(note.Title);
+
+            TextView TextTextView = (TextView)CardView.findViewById(R.id.note_text);
+            TextTextView.setText(note.Text);
         }
     }
 
@@ -51,19 +55,19 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
     public void onBindViewHolder(NoteViewHolder viewHolder, int index) {
         final NoteViewHolder viewHolderLocal = viewHolder;
 
-        // TODO: Render the whole note
         // TODO: think it better, when and who constructs notes, where to store them
-        Note note = new Note();
+        final Note note = new Note();
         note.Path = _fileList[index];
+        note.Title = note.Path; // TODO: make the title from the path
+        note.Text = "loading..."; // TODO: ?
 
-        viewHolderLocal.CardView.setHasTransientState(true);
-        viewHolderLocal.TitleTextView.setText(_fileList[index]);
-        viewHolderLocal.TextTextView.setText("loading...");
+        viewHolderLocal.bindToNote(note);
 
         OnSuccess<String> onSuccess = new OnSuccess<String>() {
             @Override
             public void call(String result) {
-                viewHolderLocal.TextTextView.setText(result); // TODO: use method instead of setting public field
+                note.Text = result;
+                viewHolderLocal.bindToNote(note);
             }
         };
         OnError onError = new OnError() {

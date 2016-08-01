@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/note_view"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_height="200dp"
+    android:layout_margin="4dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
