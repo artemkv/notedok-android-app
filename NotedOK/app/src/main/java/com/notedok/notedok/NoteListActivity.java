@@ -50,7 +50,9 @@ public class NoteListActivity extends AppCompatActivity {
             }
         });
 
+        // Refresh on pull
         _swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.notes_view_swipe);
+        _swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -88,9 +90,6 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void refresh() {
-        NotesViewAdapter notesViewAdapter = new NotesViewAdapter(new String[0]);
-        _notesView.setAdapter(notesViewAdapter);
-
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
         if (dropboxStorage != null) {
             OnSuccess<String[]> onSuccess = new OnSuccess<String[]>() {
