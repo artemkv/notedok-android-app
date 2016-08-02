@@ -30,7 +30,7 @@ public final class NoteCache {
 
         Note note = new Note();
         note.Path = path; // TODO: should be mandatory, pass through the ctor
-        note.Title = path; // TODO: calculate title from the path
+        note.Title = TitleToPathConverter.getInstance().getTitle(path);
         note.Text = "Loading..."; // TODO: Replace with actual spinner?
         note.IsLoaded = false;
 
