@@ -3,6 +3,7 @@ package com.notedok.notedok;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 
 public class NoteListActivity extends AppCompatActivity {
     private RecyclerView _notesView;
+    private SwipeRefreshLayout _swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,37 +36,6 @@ public class NoteListActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         _notesView.setLayoutManager(layoutManager);
 
-        // TODO: this is fake data, replace real stuff
-/*        String[] fileList = new String[] {
-                "aaa",
-                "bbb",
-                "ccc",
-                "ddd",
-                "eee",
-                "fff",
-                "ggg",
-                "hhh",
-                "iii",
-                "jjj",
-                "kkk",
-                "lll",
-                "mmm",
-                "nnn",
-                "ooo",
-                "ppp",
-                "qqq",
-                "rrr",
-                "sss",
-                "ttt",
-                "uuu",
-                "vvv",
-                "www",
-                "xxx",
-                "yyy",
-                "zzz"
-        };
-        refreshNotes(fileList);*/
-
         // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -76,6 +47,14 @@ public class NoteListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        _swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.notes_view_swipe);
+        _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
             }
         });
     }
@@ -105,13 +84,19 @@ public class NoteListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        refresh();
+    }
+
+    private void refresh() {
+        NotesViewAdapter notesViewAdapter = new NotesViewAdapter(new String[0]);
+        _notesView.setAdapter(notesViewAdapter);
 
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
         if (dropboxStorage != null) {
             OnSuccess<String[]> onSuccess = new OnSuccess<String[]>() {
                 @Override
                 public void call(String[] result) {
-                    refreshNotes(result);
+                    loadNotes(result);
                 }
             };
             OnError onError = new OnError() {
@@ -123,8 +108,9 @@ public class NoteListActivity extends AppCompatActivity {
         }
     }
 
-    private void refreshNotes(String[] fileList) {
+    private void loadNotes(String[] fileList) {
         NotesViewAdapter notesViewAdapter = new NotesViewAdapter(fileList);
         _notesView.setAdapter(notesViewAdapter);
+        _swipeRefreshLayout.setRefreshing(false);
     }
 }
