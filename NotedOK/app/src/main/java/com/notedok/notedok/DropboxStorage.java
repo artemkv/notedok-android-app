@@ -9,6 +9,8 @@ import com.dropbox.core.v2.files.Metadata;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,7 +50,12 @@ public class DropboxStorage {
                                 fileMetadata.add((FileMetadata)itemMetadata);
                             }
                         }
-                        // TODO: fileMetadata.sort(
+                        Collections.sort(fileMetadata, new Comparator<FileMetadata>() {
+                            @Override
+                            public int compare(FileMetadata a, FileMetadata b) {
+                                return b.getServerModified().compareTo(a.getServerModified());
+                            }
+                        });
 
                         for (int i = 0; i < fileMetadata.size(); i++) {
                             filePaths.add("/" + fileMetadata.get(i).getName());
