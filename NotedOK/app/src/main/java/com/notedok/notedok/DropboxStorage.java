@@ -2,6 +2,7 @@ package com.notedok.notedok;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 
@@ -33,14 +34,24 @@ public class DropboxStorage {
             @Override
             public String[] getResult() {
                 try {
-                    List<String> filePaths = new LinkedList<>();
+                    List<String> filePaths = new LinkedList<>(); // TODO: consider ArrayList
 
                     // TODO: or empty string
                     if (searchStringLocal == null) {
                         ListFolderResult result = _dropboxClient.files().listFolder("");
                         List<Metadata> metadata = result.getEntries();
+
+                        List<FileMetadata> fileMetadata = new LinkedList<>();
                         for (int i = 0; i < metadata.size(); i++) {
-                            filePaths.add("/" + metadata.get(i).getName());
+                            Metadata itemMetadata = metadata.get(i);
+                            if (Metadata.class.isInstance(itemMetadata) && itemMetadata.getPathLower().endsWith(".txt")) {
+                                fileMetadata.add((FileMetadata)itemMetadata);
+                            }
+                        }
+                        // TODO: fileMetadata.sort(
+
+                        for (int i = 0; i < fileMetadata.size(); i++) {
+                            filePaths.add("/" + fileMetadata.get(i).getName());
                         }
                     } else {
                         filePaths.add("search results");
