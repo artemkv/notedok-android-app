@@ -15,6 +15,8 @@ import android.view.MenuItem;
 public class NoteListActivity extends AppCompatActivity {
     private RecyclerView _notesView;
     private SwipeRefreshLayout _swipeRefreshLayout;
+    // Protects from re-loading the notes every time the activity resumes
+    private boolean _notesLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +88,9 @@ public class NoteListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        refresh();
+        if (!_notesLoaded) {
+            refresh();
+        }
     }
 
     private void refresh() {
@@ -111,5 +115,6 @@ public class NoteListActivity extends AppCompatActivity {
         NotesViewAdapter notesViewAdapter = new NotesViewAdapter(fileList);
         _notesView.setAdapter(notesViewAdapter);
         _swipeRefreshLayout.setRefreshing(false);
+        _notesLoaded = true;
     }
 }
