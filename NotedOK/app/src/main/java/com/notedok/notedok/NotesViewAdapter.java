@@ -1,5 +1,7 @@
 package com.notedok.notedok;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,32 +10,58 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.NoteViewHolder> {
-    private String[] _fileList;
+    private String[] _fileList; // TODO: need to move to the common place
+    private Activity _currentActivity; // TODO: need to move to the common place
     private int _visibleNotesTotal = 0;
 
-    public static class NoteViewHolder extends RecyclerView.ViewHolder {
-        public CardView CardView;
+    // TODO: Why static class?
+    public static class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private CardView CardView;
+        private Note _note;
+        private Activity _currentActivity; // TODO: need to move to the common place
 
-        public NoteViewHolder(View view) {
+        public NoteViewHolder(View view, Activity currentActivity) {
             super(view);
+
+            _currentActivity = currentActivity;
             CardView = (CardView)view.findViewById(R.id.note_view);
         }
 
         public void bindToNote(Note note) {
+            _note = note;
 
             TextView TitleTextView = (TextView)CardView.findViewById(R.id.note_title);
             TitleTextView.setText(note.Title);
 
             TextView TextTextView = (TextView)CardView.findViewById(R.id.note_text);
             TextTextView.setText(note.Text);
+
+            CardView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            showDetails();
+        }
+
+        private void showDetails() {
+            if (_note != null) {
+                Intent intent = new Intent(_currentActivity, NoteViewActivity.class);
+                intent.putExtra("path", _note.Path);
+                _currentActivity.startActivity(intent);
+            }
         }
     }
 
-    public NotesViewAdapter(String[] fileList) {
-        if (fileList == null) {
+    public NotesViewAdapter(String[] fileList, Activity currentActivity) {
+        if (fileList == null)
             throw new IllegalArgumentException("fileList");
-        }
+        if (currentActivity == null)
+            throw new IllegalArgumentException("currentActivity");
+
         _fileList = fileList;
+        _currentActivity = currentActivity;
+
         NoteCache.getInstance().clear();
         loadNextPage();
     }
@@ -52,7 +80,7 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
     public NoteViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.note_view, parent, false);
-        NoteViewHolder viewHolder = new NoteViewHolder(view);
+        NoteViewHolder viewHolder = new NoteViewHolder(view, _currentActivity);
         return viewHolder;
     }
 
@@ -80,6 +108,7 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
             OnError onError = new OnError() {
                 @Override
                 public void call(Exception e) {
+                    // TODO: error handling
                 }
             };
 

@@ -52,7 +52,7 @@ public class NoteListActivity extends AppCompatActivity {
             }
         });
 
-        // Refresh on pull
+        // Set up refresh on pull
         _swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.notes_view_swipe);
         _swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -65,6 +65,8 @@ public class NoteListActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // TODO: do we need this?
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_note_list, menu);
         return true;
@@ -72,6 +74,8 @@ public class NoteListActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // TODO: do we need this?
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -88,6 +92,7 @@ public class NoteListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         if (!_notesLoaded) {
             refresh();
         }
@@ -105,6 +110,7 @@ public class NoteListActivity extends AppCompatActivity {
             OnError onError = new OnError() {
                 @Override
                 public void call(Exception e) {
+                    // TODO: error handling
                 }
             };
             dropboxStorage.retrieveFileList(null, onSuccess, onError);
@@ -112,9 +118,12 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void loadNotes(String[] fileList) {
-        NotesViewAdapter notesViewAdapter = new NotesViewAdapter(fileList);
+        // Reset the adapter
+        NotesViewAdapter notesViewAdapter = new NotesViewAdapter(fileList, NoteListActivity.this);
         _notesView.setAdapter(notesViewAdapter);
+        // Stop the pull refresh animation
         _swipeRefreshLayout.setRefreshing(false);
+        // Avoid re-loading the notes next time the activity resumes
         _notesLoaded = true;
     }
 }
