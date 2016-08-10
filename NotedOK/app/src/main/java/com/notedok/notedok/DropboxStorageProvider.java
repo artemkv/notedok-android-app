@@ -35,6 +35,9 @@ public final class DropboxStorageProvider {
      * @param activity The activity that initializes a provider.
      */
     public static void initialize(AppCompatActivity activity) {
+        if (activity == null)
+            throw new IllegalArgumentException("activity");
+
         Initialized = true;
 
         // Save preferences

@@ -10,33 +10,30 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.NoteViewHolder> {
-    private String[] _fileList; // TODO: need to move to the common place
-    private Activity _currentActivity; // TODO: need to move to the common place
     private int _visibleNotesTotal = 0;
 
     // TODO: Why static class?
     public static class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private CardView CardView;
-        private Note _note;
-        private Activity _currentActivity; // TODO: need to move to the common place
+        private CardView _cardView;
+        private int _position;
 
-        public NoteViewHolder(View view, Activity currentActivity) {
+        public NoteViewHolder(View view) {
             super(view);
-
-            _currentActivity = currentActivity;
-            CardView = (CardView)view.findViewById(R.id.note_view);
+            _cardView = (CardView)view.findViewById(R.id.note_view);
         }
 
-        public void bindToNote(Note note) {
-            _note = note;
+        public void bindToNote(int position) {
+            _position = position;
 
-            TextView TitleTextView = (TextView)CardView.findViewById(R.id.note_title);
+            Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(position));
+
+            TextView TitleTextView = (TextView)_cardView.findViewById(R.id.note_title);
             TitleTextView.setText(note.Title);
 
-            TextView TextTextView = (TextView)CardView.findViewById(R.id.note_text);
+            TextView TextTextView = (TextView)_cardView.findViewById(R.id.note_text);
             TextTextView.setText(note.Text);
 
-            CardView.setOnClickListener(this);
+            _cardView.setOnClickListener(this);
         }
 
         @Override
@@ -45,32 +42,13 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
         }
 
         private void showDetails() {
-            if (_note != null) {
-                Intent intent = new Intent(_currentActivity, NoteViewActivity.class);
-                intent.putExtra("path", _note.Path);
-                _currentActivity.startActivity(intent);
-            }
+            MasterActivity masterActivity = MasterActivityProvider.getMasterActivity();
+            masterActivity.switchToDetailActivity(_position);
         }
     }
 
-    public NotesViewAdapter(String[] fileList, Activity currentActivity) {
-        if (fileList == null)
-            throw new IllegalArgumentException("fileList");
-        if (currentActivity == null)
-            throw new IllegalArgumentException("currentActivity");
-
-        _fileList = fileList;
-        _currentActivity = currentActivity;
-
-        NoteCache.getInstance().clear();
-        loadNextPage();
-    }
-
-    public void loadNextPage() {
-        _visibleNotesTotal += 5; // TODO: constant
-        if (_visibleNotesTotal > _fileList.length) {
-            _visibleNotesTotal = _fileList.length;
-        }
+    public NotesViewAdapter() {
+        allowOneMorePage();
     }
 
     /**
@@ -80,21 +58,22 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
     public NoteViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.note_view, parent, false);
-        NoteViewHolder viewHolder = new NoteViewHolder(view, _currentActivity);
+        NoteViewHolder viewHolder = new NoteViewHolder(view);
         return viewHolder;
     }
 
     /**
      * Replaces the contents of a view (invoked by the layout manager)
      * @param viewHolder The instance of the view holder
-     * @param index The index of the element
+     * @param position The position of the element
      */
     @Override
-    public void onBindViewHolder(NoteViewHolder viewHolder, int index) {
+    public void onBindViewHolder(NoteViewHolder viewHolder, int position) {
         final NoteViewHolder viewHolderLocal = viewHolder;
+        final int positionLocal = position;
 
-        final Note note = NoteCache.getInstance().getNote(_fileList[index]);
-        viewHolderLocal.bindToNote(note);
+        final Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(positionLocal));
+        viewHolderLocal.bindToNote(positionLocal);
 
         if (!note.IsLoaded) {
             OnSuccess<String> onSuccess = new OnSuccess<String>() {
@@ -102,7 +81,7 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
                 public void call(String result) {
                     note.Text = result;
                     note.IsLoaded = true;
-                    viewHolderLocal.bindToNote(note);
+                    viewHolderLocal.bindToNote(positionLocal);
                 }
             };
             OnError onError = new OnError() {
@@ -118,8 +97,8 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
             }
 
             // If reached the last visible note, load the next five
-            if (index == _visibleNotesTotal - 1) {
-                loadNextPage();
+            if (positionLocal == _visibleNotesTotal - 1) {
+                allowOneMorePage();
             }
         }
     }
@@ -131,5 +110,12 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
     @Override
     public int getItemCount() {
         return _visibleNotesTotal;
+    }
+
+    private void allowOneMorePage() {
+        _visibleNotesTotal += 5; // TODO: constant
+        if (_visibleNotesTotal > CurrentFileList.getInstance().length()) {
+            _visibleNotesTotal = CurrentFileList.getInstance().length();
+        }
     }
 }

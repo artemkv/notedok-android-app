@@ -1,5 +1,6 @@
 package com.notedok.notedok;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,7 +13,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class NoteListActivity extends AppCompatActivity {
+public class NoteListActivity extends AppCompatActivity implements MasterActivity {
     private RecyclerView _notesView;
     private SwipeRefreshLayout _swipeRefreshLayout;
     // Protects from re-loading the notes every time the activity resumes
@@ -27,6 +28,9 @@ public class NoteListActivity extends AppCompatActivity {
 
         // Set context
         setContentView(R.layout.activity_note_list);
+
+        // Set itself as a master activity
+        MasterActivityProvider.initialize(this);
 
         // Set up recycler view
         _notesView = (RecyclerView)findViewById(R.id.notes_view);
@@ -93,6 +97,7 @@ public class NoteListActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        // Avoid reloading all data every time user switches from and to the app.
         if (!_notesLoaded) {
             refresh();
         }
@@ -101,10 +106,13 @@ public class NoteListActivity extends AppCompatActivity {
     private void refresh() {
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
         if (dropboxStorage != null) {
+            CurrentFileList.getInstance().clear();
+
             OnSuccess<String[]> onSuccess = new OnSuccess<String[]>() {
                 @Override
                 public void call(String[] result) {
-                    loadNotes(result);
+                    CurrentFileList.getInstance().reload(result);
+                    loadNotes();
                 }
             };
             OnError onError = new OnError() {
@@ -117,13 +125,22 @@ public class NoteListActivity extends AppCompatActivity {
         }
     }
 
-    private void loadNotes(String[] fileList) {
+    private void loadNotes() {
+        // Clear the cache to force the call to Dropbox for the latest content
+        NoteCache.getInstance().clear();
         // Reset the adapter
-        NotesViewAdapter notesViewAdapter = new NotesViewAdapter(fileList, NoteListActivity.this);
+        NotesViewAdapter notesViewAdapter = new NotesViewAdapter();
         _notesView.setAdapter(notesViewAdapter);
         // Stop the pull refresh animation
         _swipeRefreshLayout.setRefreshing(false);
         // Avoid re-loading the notes next time the activity resumes
         _notesLoaded = true;
+    }
+
+    @Override
+    public void switchToDetailActivity(int position) {
+        Intent intent = new Intent(NoteListActivity.this, NoteViewActivity.class);
+        intent.putExtra("pos", position);
+        startActivity(intent);
     }
 }

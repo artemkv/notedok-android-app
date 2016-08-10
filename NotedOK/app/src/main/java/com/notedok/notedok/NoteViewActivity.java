@@ -14,20 +14,20 @@ public class NoteViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note_view);
 
         // Which note is it?
-        // TODO: for swipe view we probably need an index and not a path
-        // TODO: Also we need to be able to access the file list
         Intent intent = getIntent();
-        String path = intent.getStringExtra("path");
+        int position = intent.getIntExtra("pos", -1);
 
-        Note note = NoteCache.getInstance().getNote(path);
+        if (position >= 0) {
+            Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(position));
 
-        // TODO: check if loaded
+            // TODO: check if loaded
 
-        // TODO: render properly
-        TextView titleView = (TextView)findViewById(R.id.note_view_title);
-        titleView.setText(note.Title);
+            // TODO: render properly
+            TextView titleView = (TextView)findViewById(R.id.note_view_title);
+            titleView.setText(note.Title);
 
-        TextView textView = (TextView)findViewById(R.id.note_view_text);
-        textView.setText(note.Text);
+            TextView textView = (TextView)findViewById(R.id.note_view_text);
+            textView.setText(note.Text);
+        }
     }
 }
