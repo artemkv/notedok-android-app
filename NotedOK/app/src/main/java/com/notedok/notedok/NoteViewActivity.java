@@ -20,7 +20,7 @@ public class NoteViewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int position = intent.getIntExtra("pos", -1);
 
-        if (position > 0) {
+        if (position >= 0) {
             // Create the pager view
             _viewPager = (ViewPager) findViewById(R.id.note_view_pager);
 
