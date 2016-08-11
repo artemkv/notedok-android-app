@@ -9,32 +9,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.notedok.notedok.NoteViewActivity">
 
-    <RelativeLayout
+    <android.support.v4.view.ViewPager
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/note_view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/cards_padding">
-
-        <TextView
-            android:id="@+id/note_view_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:padding="@dimen/note_title_padding"
-            android:textSize="@dimen/note_title_text_size"
-            android:fontFamily="roboto-medium"
-            android:textColor="@color/colorTitle"/>
-
-        <TextView
-            android:id="@+id/note_view_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/note_view_title"
-            android:padding="@dimen/note_title_padding"
-            android:textSize="@dimen/note_text_text_size"
-            android:fontFamily="roboto-regular"
-            android:textColor="@color/colorText"/>
-
-    </RelativeLayout>
-
+        android:layout_height="match_parent" />
 </RelativeLayout>
