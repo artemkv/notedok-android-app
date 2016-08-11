@@ -6,4 +6,7 @@
 
     <color name="colorTitle">#DF000000</color>
     <color name="colorText">#DF000000</color>
+
+    <color name="colorTitleMasterFg">#FFFFFF</color>
+    <color name="colorTitleMasterBg">#BDBDBD</color>
 </resources>

@@ -3,31 +3,32 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/note_view"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/card_height"
-    android:layout_margin="@dimen/cards_margin">
+    android:layout_height="@dimen/note_card_height"
+    android:layout_margin="@dimen/note_card_view_margin">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/cards_padding">
+        android:padding="0dp">
 
         <TextView
             android:id="@+id/note_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:padding="@dimen/note_title_padding"
+            android:padding="@dimen/note_card_view_padding"
             android:textSize="@dimen/note_title_text_size"
             android:fontFamily="roboto-medium"
-            android:textColor="@color/colorTitle"/>
+            android:background="@color/colorTitleMasterBg"
+            android:textColor="@color/colorTitleMasterFg"/>
 
         <TextView
             android:id="@+id/note_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/note_title"
-            android:padding="@dimen/note_title_padding"
+            android:padding="@dimen/note_card_view_padding"
             android:textSize="@dimen/note_text_text_size"
             android:fontFamily="roboto-regular"
             android:textColor="@color/colorText"/>

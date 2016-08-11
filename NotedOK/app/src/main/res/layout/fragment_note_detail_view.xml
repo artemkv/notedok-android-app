@@ -12,7 +12,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/cards_padding">
+            android:padding="@dimen/note_detail_view_padding">
 
             <TextView
                 android:id="@+id/note_view_title"
