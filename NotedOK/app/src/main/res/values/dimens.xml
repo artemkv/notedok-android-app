@@ -2,13 +2,6 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="note_card_view_margin">4dp</dimen>
-    <dimen name="note_card_height">220dp</dimen>
-    <dimen name="note_card_view_padding">20dp</dimen>
-
-    <dimen name="note_detail_view_padding">12dp</dimen>
-
-    <dimen name="note_title_padding">8dp</dimen>
     <dimen name="note_title_text_size">20sp</dimen>
     <dimen name="note_text_text_size">14sp</dimen>
 </resources>

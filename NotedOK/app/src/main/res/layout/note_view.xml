@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/note_view"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/note_card_height"
-    android:layout_margin="@dimen/note_card_view_margin">
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,7 +17,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:padding="@dimen/note_card_view_padding"
+            android:minHeight="96dp"
+            android:maxHeight="96dp"
+            android:paddingTop="24dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp"
             android:textSize="@dimen/note_title_text_size"
             android:fontFamily="roboto-medium"
             android:background="@color/colorTitleMasterBg"
@@ -25,13 +30,27 @@
 
         <TextView
             android:id="@+id/note_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/note_title"
-            android:padding="@dimen/note_card_view_padding"
+            android:lines="5"
+            android:scrollHorizontally="false"
+            android:ellipsize="end"
+            android:padding="16dp"
             android:textSize="@dimen/note_text_text_size"
             android:fontFamily="roboto-regular"
             android:textColor="@color/colorText"/>
+
+        <Button
+            android:id="@+id/note_edit_button"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_below="@+id/note_text"
+            android:text="@string/button_edit"
+            android:textAppearance="@style/TextAppearance.AppCompat.Button"
+            android:textColor="@color/colorPrimary"
+            style="?borderlessButtonStyle" />
 
     </RelativeLayout>
 
