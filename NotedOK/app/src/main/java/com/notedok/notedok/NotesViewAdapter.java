@@ -82,7 +82,15 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
                     note.Text = result;
                     note.IsLoaded = true;
                     viewHolderLocal.bindToNote(positionLocal);
+
+                    // Now this view has been fully loaded, allow re-using it
                     viewHolderLocal.itemView.setHasTransientState(false);
+
+                    // If reached the last visible note, load the next five
+                    if (positionLocal == _visibleNotesTotal - 1) {
+                        // Should be called from the AsyncTask, since updates the UI
+                        allowOneMorePage();
+                    }
                 }
             };
             OnError onError = new OnError() {
@@ -94,13 +102,8 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
 
             DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
             if (dropboxStorage != null) {
-                viewHolderLocal.itemView.setHasTransientState(true);
+                viewHolderLocal.itemView.setHasTransientState(true); // Do not allow re-using this view until it is fully loaded
                 dropboxStorage.getNoteContent(note, onSuccess, onError);
-            }
-
-            // If reached the last visible note, load the next five
-            if (positionLocal == _visibleNotesTotal - 1) {
-                allowOneMorePage();
             }
         }
     }
@@ -119,5 +122,6 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
         if (_visibleNotesTotal > CurrentFileList.getInstance().length()) {
             _visibleNotesTotal = CurrentFileList.getInstance().length();
         }
+        notifyDataSetChanged();
     }
 }
