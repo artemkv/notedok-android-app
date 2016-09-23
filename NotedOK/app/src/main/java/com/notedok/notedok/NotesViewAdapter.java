@@ -82,6 +82,7 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
                     note.Text = result;
                     note.IsLoaded = true;
                     viewHolderLocal.bindToNote(positionLocal);
+                    viewHolderLocal.itemView.setHasTransientState(false);
                 }
             };
             OnError onError = new OnError() {
@@ -93,6 +94,7 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
 
             DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
             if (dropboxStorage != null) {
+                viewHolderLocal.itemView.setHasTransientState(true);
                 dropboxStorage.getNoteContent(note, onSuccess, onError);
             }
 
