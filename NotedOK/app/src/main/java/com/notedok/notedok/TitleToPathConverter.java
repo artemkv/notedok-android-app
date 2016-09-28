@@ -44,19 +44,23 @@ public final class TitleToPathConverter {
     }
 
     /**
-     * Generates the file path from the note title
-     * @param note The note
+     * Generates the file path from the title
+     * @param title The title
      * @param ensureUnique True, if the file path needs the timestamp that guarantees the uniqueness of the generated path.
      * @return The file path.
      */
-    public String generatePath(Note note, boolean ensureUnique) {
+    public String generatePath(String title, boolean ensureUnique) {
+        if (title == null) {
+            title = "";
+        }
+
         String postfix = "";
-        if (ensureUnique || note.Title == null || note.Title.isEmpty()) {
+        if (ensureUnique || title.isEmpty()) {
             Date date = new Date();
             long n = date.getTime();
             postfix = TITLE_POSTFIX_SEPARATOR + n;
         }
-        return "/" + encodePathFileSystemFriendly(note.Title) + postfix + ".txt";
+        return "/" + encodePathFileSystemFriendly(title) + postfix + ".txt";
     }
 
     private String encodePathFileSystemFriendly(String path) {

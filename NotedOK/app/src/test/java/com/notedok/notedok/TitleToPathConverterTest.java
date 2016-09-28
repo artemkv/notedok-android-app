@@ -3,6 +3,7 @@ package com.notedok.notedok;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TitleToPathConverterTest {
     @Test
@@ -38,5 +39,33 @@ public class TitleToPathConverterTest {
     @Test
     public void getTitleFromShortPath() throws Exception {
         assertEquals("1", TitleToPathConverter.getInstance().getTitle("/1.txt"));
+    }
+
+    @Test
+    public void generatePathFromTitle() throws Exception {
+        assertEquals("/Hello, World.txt", TitleToPathConverter.getInstance().generatePath("Hello, World", false));
+    }
+
+    @Test
+    public void generateUniquePathFromTitle() throws Exception {
+        assertTrue(TitleToPathConverter.getInstance().generatePath("Hello, World", true).startsWith("/Hello, World~~"));
+        assertTrue(TitleToPathConverter.getInstance().generatePath("Hello, World", true).endsWith(".txt"));
+    }
+
+    @Test
+    public void generatePathFromNullTitle() throws Exception {
+        assertTrue(TitleToPathConverter.getInstance().generatePath(null, false).startsWith("/~~"));
+        assertTrue(TitleToPathConverter.getInstance().generatePath(null, false).endsWith(".txt"));
+    }
+
+    @Test
+    public void generatePathFromEmptyTitle() throws Exception {
+        assertTrue(TitleToPathConverter.getInstance().generatePath(null, false).startsWith("/~~"));
+        assertTrue(TitleToPathConverter.getInstance().generatePath(null, false).endsWith(".txt"));
+    }
+
+    @Test
+    public void generatePathFromTitleEncodeChars() throws Exception {
+        assertEquals("/Hello, World (sl)(qst)(lt)(gt)(bsl)(col)(star)(pipe)(dqt)(crt).txt", TitleToPathConverter.getInstance().generatePath("Hello, World /?<>\\:*|\"^", false));
     }
 }
