@@ -1,7 +1,5 @@
 package com.notedok.notedok;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,10 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.NoteViewHolder> {
-    private int _visibleNotesTotal = 0;
-
+public class NotesViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // TODO: Why static class?
+    /**
+     * Implements holder for the note view
+     */
     public static class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private CardView _cardView;
         private int _position;
@@ -47,19 +46,60 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
         }
     }
 
+    // TODO: Why static class?
+    /**
+     * Implements holder for the note loading indicator view
+     */
+    public static class NoteLoadingIndicatorViewHolder extends RecyclerView.ViewHolder {
+        public NoteLoadingIndicatorViewHolder(View view) {
+            super(view);
+        }
+    }
+
+    // Constants
+
+    private final int NOTE_VIEW = 0;
+    private final int LOADING_INDICATOR_VIEW = 1;
+
+    // Private variables
+
+    private int _visibleNotesTotal = 0; // Counts only real notes, not a loading indicator!
+
     public NotesViewAdapter() {
         allowOneMorePage();
+    }
+
+    @Override
+    /**
+     * Return the view type of the item (invoked by the layout manager)
+     */
+    public int getItemViewType(int position) {
+        if (position < _visibleNotesTotal) {
+            return NOTE_VIEW;
+        }
+
+        // We are behind the last visible note, so we are looking at the progress indicator
+        return LOADING_INDICATOR_VIEW;
     }
 
     /**
      * Creates new views (invoked by the layout manager)
      */
     @Override
-    public NoteViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.note_view, parent, false);
-        NoteViewHolder viewHolder = new NoteViewHolder(view);
-        return viewHolder;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // Create a note view or the note loading indicator view, depending on the view type
+        if (viewType == NOTE_VIEW) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.note_view, parent, false);
+            NoteViewHolder viewHolder = new NoteViewHolder(view);
+            return viewHolder;
+        }
+        else {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.note_loading_indicator_view, parent, false);
+            NoteLoadingIndicatorViewHolder viewHolder = new NoteLoadingIndicatorViewHolder(view);
+            return viewHolder;
+        }
     }
 
     /**
@@ -68,7 +108,35 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
      * @param position The position of the element
      */
     @Override
-    public void onBindViewHolder(NoteViewHolder viewHolder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        if (viewHolder instanceof NoteViewHolder) {
+            bindViewHolder((NoteViewHolder)viewHolder, position);
+        }
+        else {
+            bindViewLoadingHolder((NoteLoadingIndicatorViewHolder)viewHolder, position);
+        }
+    }
+
+    /**
+     * Returns the size of the dataset (invoked by the layout manager)
+     * @return The size of the dataset
+     */
+    @Override
+    public int getItemCount() {
+        // Counts every visible note + loading indicator (if necessary)
+
+        boolean showProgressIndicator;
+        if (CurrentFileList.getInstance().length() > _visibleNotesTotal) {
+            showProgressIndicator = true;
+        }
+        else {
+            showProgressIndicator = false;
+        }
+
+        return _visibleNotesTotal + (showProgressIndicator ? 1 : 0);
+    }
+
+    private void bindViewHolder(NoteViewHolder viewHolder, int position) {
         final NoteViewHolder viewHolderLocal = viewHolder;
         final int positionLocal = position;
 
@@ -85,12 +153,6 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
 
                     // Now this view has been fully loaded, allow re-using it
                     viewHolderLocal.itemView.setHasTransientState(false);
-
-                    // If reached the last visible note, load the next five
-                    if (positionLocal == _visibleNotesTotal - 1) {
-                        // Should be called from the AsyncTask, since updates the UI
-                        allowOneMorePage();
-                    }
                 }
             };
             OnError onError = new OnError() {
@@ -108,15 +170,31 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
         }
     }
 
-    /**
-     * Returns the size of the dataset (invoked by the layout manager)
-     * @return The size of the dataset
-     */
-    @Override
-    public int getItemCount() {
-        return _visibleNotesTotal;
+    private void bindViewLoadingHolder(NoteLoadingIndicatorViewHolder viewHolder, int position) {
+        // TODO: this needs reworking
+        AsyncWorkerTask.Worker<String> worker = new AsyncWorkerTask.Worker<String>() {
+            @Override
+            public String getResult() {
+                return "";
+            }
+        };
+        OnSuccess<String> onSuccess = new OnSuccess<String>() {
+            @Override
+            public void call(String result) {
+                allowOneMorePage();
+            }
+        };
+
+        OnError onError = new OnError() {
+            @Override
+            public void call(Exception e) {
+                // TODO: error handling
+            }
+        };
+        new AsyncWorkerTask<String>(worker, onSuccess, onError).execute();
     }
 
+    // Cannot be called while re-drawing!
     private void allowOneMorePage() {
         _visibleNotesTotal += 5; // TODO: constant
         if (_visibleNotesTotal > CurrentFileList.getInstance().length()) {
