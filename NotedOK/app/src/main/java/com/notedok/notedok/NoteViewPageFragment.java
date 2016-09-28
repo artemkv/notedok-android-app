@@ -31,10 +31,10 @@ public class NoteViewPageFragment extends Fragment {
         // Render the note
         // TODO: render properly
         TextView titleView = (TextView)noteDetailView.findViewById(R.id.note_view_title);
-        titleView.setText(note.Title);
+        titleView.setText(note.getTitle());
 
         TextView textView = (TextView)noteDetailView.findViewById(R.id.note_view_text);
-        textView.setText(note.Text);
+        textView.setText(note.getText());
 
         // Return the prepared view
         return noteDetailView;

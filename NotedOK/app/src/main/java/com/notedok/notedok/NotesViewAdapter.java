@@ -28,10 +28,10 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
             Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(position));
 
             TextView TitleTextView = (TextView)_cardView.findViewById(R.id.note_title);
-            TitleTextView.setText(note.Title);
+            TitleTextView.setText(note.getTitle());
 
             TextView TextTextView = (TextView)_cardView.findViewById(R.id.note_text);
-            TextTextView.setText(note.Text);
+            TextTextView.setText(note.getText());
 
             _cardView.setOnClickListener(this);
         }
@@ -75,12 +75,12 @@ public class NotesViewAdapter extends RecyclerView.Adapter<NotesViewAdapter.Note
         final Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(positionLocal));
         viewHolderLocal.bindToNote(positionLocal);
 
-        if (!note.IsLoaded) {
+        if (!note.getIsLoaded()) {
             OnSuccess<String> onSuccess = new OnSuccess<String>() {
                 @Override
                 public void call(String result) {
-                    note.Text = result;
-                    note.IsLoaded = true;
+                    note.setText(result);
+                    note.setIsLoaded(true);
                     viewHolderLocal.bindToNote(positionLocal);
 
                     // Now this view has been fully loaded, allow re-using it

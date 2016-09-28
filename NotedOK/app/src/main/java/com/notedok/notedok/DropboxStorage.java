@@ -82,7 +82,7 @@ public class DropboxStorage {
             public String getResult() {
                 try {
                     OutputStream stream = new ByteArrayOutputStream();
-                    _dropboxClient.files().download(noteLocal.Path).download(stream);
+                    _dropboxClient.files().download(noteLocal.getPath()).download(stream);
                     return stream.toString();
                 } catch (DbxException | IOException e) {
                     throw new RuntimeException(e);

@@ -24,15 +24,19 @@ public final class NoteCache {
     public Note getNote(String path) {
         // TODO: Does it need to be synchronized?
 
+        if (path == null) {
+            throw new IllegalArgumentException("path");
+        }
+
         if (_notes.containsKey(path)) {
             return _notes.get(path);
         }
 
         Note note = new Note();
-        note.Path = path; // TODO: should be mandatory, pass through the ctor
-        note.Title = TitleToPathConverter.getInstance().getTitle(path);
-        note.Text = "Loading..."; // TODO: Replace with actual spinner?
-        note.IsLoaded = false;
+        note.setPath(path);
+        note.setTitle(TitleToPathConverter.getInstance().getTitle(path));
+        note.setText("Loading..."); // TODO: Replace with actual spinner?
+        note.setIsLoaded(false);
 
         _notes.put(path, note);
 
