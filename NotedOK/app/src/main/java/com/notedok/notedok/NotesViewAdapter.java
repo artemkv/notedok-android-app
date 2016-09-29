@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class NotesViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -53,6 +54,8 @@ public class NotesViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public static class NoteLoadingIndicatorViewHolder extends RecyclerView.ViewHolder {
         public NoteLoadingIndicatorViewHolder(View view) {
             super(view);
+            ProgressBar progressBar = (ProgressBar) itemView.findViewById(R.id.note_view_loading_progress_bar);
+            progressBar.setIndeterminate(true);
         }
     }
 
