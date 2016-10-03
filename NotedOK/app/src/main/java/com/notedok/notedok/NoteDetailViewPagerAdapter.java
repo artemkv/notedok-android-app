@@ -24,7 +24,7 @@ public class NoteDetailViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return CurrentFileList.getInstance().length();
+        return CurrentFileList.getInstance().getLength();
     }
 }
 

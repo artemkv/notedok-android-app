@@ -51,7 +51,7 @@ public final class CurrentFileList {
      * Returns the length of the file list.
      * @return The length of the file list.
      */
-    public int length() {
+    public int getLength() {
         return _files.length;
     }
 

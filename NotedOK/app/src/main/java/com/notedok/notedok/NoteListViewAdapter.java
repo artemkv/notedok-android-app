@@ -129,7 +129,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         // Counts every visible note + loading indicator (if necessary)
 
         boolean showProgressIndicator;
-        if (CurrentFileList.getInstance().length() > _visibleNotesTotal) {
+        if (CurrentFileList.getInstance().getLength() > _visibleNotesTotal) {
             showProgressIndicator = true;
         }
         else {
@@ -205,8 +205,8 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     // Cannot be called while re-drawing!
     private void allowOneMorePage() {
         _visibleNotesTotal += 5; // TODO: constant
-        if (_visibleNotesTotal > CurrentFileList.getInstance().length()) {
-            _visibleNotesTotal = CurrentFileList.getInstance().length();
+        if (_visibleNotesTotal > CurrentFileList.getInstance().getLength()) {
+            _visibleNotesTotal = CurrentFileList.getInstance().getLength();
         }
         notifyDataSetChanged();
     }
