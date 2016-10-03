@@ -17,26 +17,63 @@ public class NoteDetailViewPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Create a view to show the note
-        View noteDetailView = inflater.inflate(R.layout.fragment_note_detail_view, container, false);
+        final View noteDetailView = inflater.inflate(R.layout.fragment_note_detail_view, container, false);
 
         // Which note is it?
         Bundle args = getArguments();
         int position = args.getInt(NoteDetailViewPageFragment.POSITION_ARGUMENT_NAME);
 
         // Get the note
-        Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(position));
+        final Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(position));
 
-        // TODO: check if loaded, and load if not
+        // Render - sync or async
+        if (note.getIsLoaded()) {
+            renderNote(note, noteDetailView);
+        }
+        else {
+            renderNoteTitle(note, noteDetailView);
+            // TODO: progress bar
 
-        // Render the note
+            OnSuccess<String> onSuccess = new OnSuccess<String>() {
+                @Override
+                public void call(String result) {
+                    note.setText(result);
+                    note.setIsLoaded(true);
+
+                    // TODO: can this view be re-used?
+                    // TODO: basically, does it need to verify that the position is still the same?
+                    renderNote(note, noteDetailView);
+                }
+            };
+            OnError onError = new OnError() {
+                @Override
+                public void call(Exception e) {
+                    // TODO: error handling
+                }
+            };
+
+            DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+            if (dropboxStorage != null) {
+                dropboxStorage.getNoteContent(note, onSuccess, onError);
+            }
+        }
+
+        // Return the prepared view
+        return noteDetailView;
+    }
+
+    private void renderNote(Note note, View noteDetailView) {
         // TODO: render properly
         TextView titleView = (TextView)noteDetailView.findViewById(R.id.note_view_title);
         titleView.setText(note.getTitle());
 
         TextView textView = (TextView)noteDetailView.findViewById(R.id.note_view_text);
         textView.setText(note.getText());
+    }
 
-        // Return the prepared view
-        return noteDetailView;
+    private void renderNoteTitle(Note note, View noteDetailView) {
+        // TODO: render properly
+        TextView titleView = (TextView) noteDetailView.findViewById(R.id.note_view_title);
+        titleView.setText(note.getTitle());
     }
 }
