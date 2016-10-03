@@ -10,7 +10,7 @@ import android.widget.TextView;
 /**
  * Represents the fragment that is used to show the note detail view.
  */
-public class NoteViewPageFragment extends Fragment {
+public class NoteDetailViewPageFragment extends Fragment {
     public static final String POSITION_ARGUMENT_NAME = "pos";
 
     @Override
@@ -21,7 +21,7 @@ public class NoteViewPageFragment extends Fragment {
 
         // Which note is it?
         Bundle args = getArguments();
-        int position = args.getInt(NoteViewPageFragment.POSITION_ARGUMENT_NAME);
+        int position = args.getInt(NoteDetailViewPageFragment.POSITION_ARGUMENT_NAME);
 
         // Get the note
         Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(position));

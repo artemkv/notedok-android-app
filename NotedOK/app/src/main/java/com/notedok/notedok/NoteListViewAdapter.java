@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class NotesViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // TODO: Why static class?
     /**
      * Implements holder for the note view
@@ -68,7 +68,7 @@ public class NotesViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private int _visibleNotesTotal = 0; // Counts only real notes, not a loading indicator!
 
-    public NotesViewAdapter() {
+    public NoteListViewAdapter() {
         allowOneMorePage();
     }
 

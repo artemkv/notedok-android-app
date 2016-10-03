@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class NoteListActivity extends AppCompatActivity implements MasterActivity {
+public class NoteListViewActivity extends AppCompatActivity implements MasterActivity {
     private RecyclerView _notesView;
     private SwipeRefreshLayout _swipeRefreshLayout;
     // Protects from re-loading the notes every time the activity resumes
@@ -24,7 +24,7 @@ public class NoteListActivity extends AppCompatActivity implements MasterActivit
         super.onCreate(savedInstanceState);
 
         // Initialize Dropbox authentication
-        DropboxStorageProvider.initialize(NoteListActivity.this);
+        DropboxStorageProvider.initialize(NoteListViewActivity.this);
 
         // Set context
         setContentView(R.layout.activity_note_list);
@@ -129,8 +129,8 @@ public class NoteListActivity extends AppCompatActivity implements MasterActivit
         // Clear the cache to force the call to Dropbox for the latest content
         NoteCache.getInstance().clear();
         // Reset the adapter
-        NotesViewAdapter notesViewAdapter = new NotesViewAdapter();
-        _notesView.setAdapter(notesViewAdapter);
+        NoteListViewAdapter noteListViewAdapter = new NoteListViewAdapter();
+        _notesView.setAdapter(noteListViewAdapter);
         // Stop the pull refresh animation
         _swipeRefreshLayout.setRefreshing(false);
         // Avoid re-loading the notes next time the activity resumes
@@ -139,7 +139,7 @@ public class NoteListActivity extends AppCompatActivity implements MasterActivit
 
     @Override
     public void switchToDetailActivity(int position) {
-        Intent intent = new Intent(NoteListActivity.this, NoteViewActivity.class);
+        Intent intent = new Intent(NoteListViewActivity.this, NoteDetailViewActivity.class);
         intent.putExtra("pos", position);
         startActivity(intent);
     }
