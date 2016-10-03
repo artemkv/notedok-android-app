@@ -106,8 +106,6 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     private void refresh() {
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
         if (dropboxStorage != null) {
-            CurrentFileList.getInstance().clear();
-
             OnSuccess<String[]> onSuccess = new OnSuccess<String[]>() {
                 @Override
                 public void call(String[] result) {

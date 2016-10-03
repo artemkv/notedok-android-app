@@ -24,6 +24,7 @@ public final class CurrentFileList {
 
     /**
      * Clears the current file list.
+     * Normally not needed, since once cleared and before reloaded, any async action on notes might fail.
      */
     public void clear() {
         _files = new String[0];
