@@ -22,10 +22,8 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             _cardView = (CardView)view.findViewById(R.id.note_view);
         }
 
-        public void bindToNote(int position) {
+        public void bindToNote(Note note, int position) {
             _position = position;
-
-            Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(position));
 
             TextView TitleTextView = (TextView)_cardView.findViewById(R.id.note_title);
             TitleTextView.setText(note.getTitle());
@@ -142,21 +140,20 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private void bindViewHolder(NoteViewHolder viewHolder, int position) {
         final NoteViewHolder viewHolderLocal = viewHolder;
         final int positionLocal = position;
-        final int listVersionLocal = CurrentFileList.getInstance().getVersion();
 
+        final int listVersion = CurrentFileList.getInstance().getVersion();
         final Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(positionLocal));
-        viewHolderLocal.bindToNote(positionLocal);
+        viewHolderLocal.bindToNote(note, positionLocal);
 
         if (!note.getIsLoaded()) {
             OnSuccess<String> onSuccess = new OnSuccess<String>() {
                 @Override
                 public void call(String result) {
-                    note.setText(result);
-                    note.setIsLoaded(true);
-
                     // Only re-draw if the list was not reloaded
-                    if (listVersionLocal == CurrentFileList.getInstance().getVersion()) {
-                        viewHolderLocal.bindToNote(positionLocal);
+                    if (listVersion == CurrentFileList.getInstance().getVersion()) {
+                        note.setText(result);
+                        note.setIsLoaded(true);
+                        viewHolderLocal.bindToNote(note, positionLocal);
                     }
 
                     // Now this view has been fully loaded, allow re-using it

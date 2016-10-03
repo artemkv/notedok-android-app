@@ -68,7 +68,7 @@ public final class CurrentFileList {
     }
 
     /**
-     * Returns the list version.
+     * Returns the list version. Should be used only for optimization. Is not synchronized.
      * @return The list version.
      */
     public int getVersion() {
