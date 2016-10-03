@@ -142,6 +142,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private void bindViewHolder(NoteViewHolder viewHolder, int position) {
         final NoteViewHolder viewHolderLocal = viewHolder;
         final int positionLocal = position;
+        final int listVersionLocal = CurrentFileList.getInstance().getVersion();
 
         final Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(positionLocal));
         viewHolderLocal.bindToNote(positionLocal);
@@ -152,7 +153,11 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 public void call(String result) {
                     note.setText(result);
                     note.setIsLoaded(true);
-                    viewHolderLocal.bindToNote(positionLocal);
+
+                    // Only re-draw if the list was not reloaded
+                    if (listVersionLocal == CurrentFileList.getInstance().getVersion()) {
+                        viewHolderLocal.bindToNote(positionLocal);
+                    }
 
                     // Now this view has been fully loaded, allow re-using it
                     viewHolderLocal.itemView.setHasTransientState(false);

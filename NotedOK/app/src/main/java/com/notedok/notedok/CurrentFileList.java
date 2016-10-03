@@ -10,6 +10,9 @@ public final class CurrentFileList {
     // File paths
     private String[] _files = new String[0];
 
+    // The list version.
+    private int _version = 0;
+
     // Prevents instantiation
     private CurrentFileList() {
     }
@@ -27,6 +30,7 @@ public final class CurrentFileList {
      * Normally not needed, since once cleared and before reloaded, any async action on notes might fail.
      */
     public void clear() {
+        raiseVersion();
         _files = new String[0];
     }
 
@@ -35,6 +39,7 @@ public final class CurrentFileList {
      * @param files The array of file paths. If null, the list is reset to empty.
      */
     public void reload(String[] files) {
+        raiseVersion();
         if (files == null) {
             _files = new String[0];
         } else {
@@ -60,5 +65,17 @@ public final class CurrentFileList {
             throw new IllegalArgumentException("index value is outside of list boundaries");
         }
         return _files[position];
+    }
+
+    /**
+     * Returns the list version.
+     * @return The list version.
+     */
+    public int getVersion() {
+        return _version;
+    }
+
+    private void raiseVersion() {
+        _version++;
     }
 }
