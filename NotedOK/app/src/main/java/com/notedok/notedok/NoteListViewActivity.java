@@ -110,7 +110,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
                 @Override
                 public void call(String[] result) {
                     CurrentFileList.getInstance().reload(result);
-                    loadNotes();
+                    loadNotes(new FileList(result));
                 }
             };
             OnError onError = new OnError() {
@@ -123,11 +123,11 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         }
     }
 
-    private void loadNotes() {
+    private void loadNotes(FileList filelist) {
         // Clear the cache to force the call to Dropbox for the latest content
         NoteCache.getInstance().clear();
         // Reset the adapter
-        NoteListViewAdapter noteListViewAdapter = new NoteListViewAdapter();
+        NoteListViewAdapter noteListViewAdapter = new NoteListViewAdapter(filelist);
         _notesView.setAdapter(noteListViewAdapter);
         // Stop the pull refresh animation
         _swipeRefreshLayout.setRefreshing(false);

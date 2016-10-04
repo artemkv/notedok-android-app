@@ -65,8 +65,14 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     // Private variables
 
     private int _visibleNotesTotal = 0; // Counts only real notes, not a loading indicator!
+    private FileList _fileList;
 
-    public NoteListViewAdapter() {
+    public NoteListViewAdapter(FileList fileList) {
+        if (fileList == null)
+            throw new IllegalArgumentException("fileList");
+
+        _fileList = fileList;
+
         allowOneMorePage();
     }
 
@@ -127,7 +133,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         // Counts every visible note + loading indicator (if necessary)
 
         boolean showProgressIndicator;
-        if (CurrentFileList.getInstance().getLength() > _visibleNotesTotal) {
+        if (_fileList.getLength() > _visibleNotesTotal) {
             showProgressIndicator = true;
         }
         else {
@@ -141,20 +147,16 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         final NoteViewHolder viewHolderLocal = viewHolder;
         final int positionLocal = position;
 
-        final int listVersion = CurrentFileList.getInstance().getVersion();
-        final Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(positionLocal));
+        final Note note = NoteCache.getInstance().getNote(_fileList.getPath(positionLocal));
         viewHolderLocal.bindToNote(note, positionLocal);
 
         if (!note.getIsLoaded()) {
             OnSuccess<String> onSuccess = new OnSuccess<String>() {
                 @Override
                 public void call(String result) {
-                    // Only re-draw if the list was not reloaded
-                    if (listVersion == CurrentFileList.getInstance().getVersion()) {
-                        note.setText(result);
-                        note.setIsLoaded(true);
-                        viewHolderLocal.bindToNote(note, positionLocal);
-                    }
+                    note.setText(result);
+                    note.setIsLoaded(true);
+                    viewHolderLocal.bindToNote(note, positionLocal);
 
                     // Now this view has been fully loaded, allow re-using it
                     viewHolderLocal.itemView.setHasTransientState(false);
@@ -202,8 +204,8 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     // Cannot be called while re-drawing!
     private void allowOneMorePage() {
         _visibleNotesTotal += 5; // TODO: constant
-        if (_visibleNotesTotal > CurrentFileList.getInstance().getLength()) {
-            _visibleNotesTotal = CurrentFileList.getInstance().getLength();
+        if (_visibleNotesTotal > _fileList.getLength()) {
+            _visibleNotesTotal = _fileList.getLength();
         }
         notifyDataSetChanged();
     }
