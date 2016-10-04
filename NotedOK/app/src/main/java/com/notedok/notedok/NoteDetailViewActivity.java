@@ -31,4 +31,11 @@ public class NoteDetailViewActivity extends AppCompatActivity {
             _viewPager.setCurrentItem(position);
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // TODO: resume correctly
+    }
 }

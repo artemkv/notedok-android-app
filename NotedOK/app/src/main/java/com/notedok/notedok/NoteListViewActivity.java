@@ -97,6 +97,8 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     protected void onResume() {
         super.onResume();
 
+        // TODO: resume correctly
+
         // Avoid reloading all data every time user switches from and to the app.
         if (!_notesLoaded) {
             refresh();

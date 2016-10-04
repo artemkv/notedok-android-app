@@ -22,12 +22,11 @@ public final class NoteCache {
     }
 
     public Note getNote(String path) {
-        // TODO: Does it need to be synchronized?
-
         if (path == null) {
             throw new IllegalArgumentException("path");
         }
 
+        // TODO: Needs to be synchronized?
         if (_notes.containsKey(path)) {
             return _notes.get(path);
         }
@@ -38,6 +37,7 @@ public final class NoteCache {
         note.setText("Loading..."); // TODO: Replace with actual spinner?
         note.setIsLoaded(false);
 
+        // TODO: Needs to be synchronized?
         _notes.put(path, note);
 
         return note;
