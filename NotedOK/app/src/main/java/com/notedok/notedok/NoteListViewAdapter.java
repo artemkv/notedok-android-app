@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.File;
+
 public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // TODO: Why static class?
     /**
@@ -15,6 +17,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      */
     public static class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private CardView _cardView;
+        private FileList _fileList;
         private int _position;
 
         public NoteViewHolder(View view) {
@@ -22,7 +25,8 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             _cardView = (CardView)view.findViewById(R.id.note_view);
         }
 
-        public void bindToNote(Note note, int position) {
+        public void bindToNote(Note note, FileList fileList, int position) {
+            _fileList = fileList;
             _position = position;
 
             TextView TitleTextView = (TextView)_cardView.findViewById(R.id.note_title);
@@ -41,7 +45,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void showDetails() {
             MasterActivity masterActivity = MasterActivityProvider.getMasterActivity();
-            masterActivity.switchToDetailActivity(_position);
+            masterActivity.switchToDetailActivity(_fileList, _position);
         }
     }
 
@@ -148,7 +152,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         final int positionLocal = position;
 
         final Note note = NoteCache.getInstance().getNote(_fileList.getPath(positionLocal));
-        viewHolderLocal.bindToNote(note, positionLocal);
+        viewHolderLocal.bindToNote(note, _fileList, positionLocal);
 
         if (!note.getIsLoaded()) {
             OnSuccess<String> onSuccess = new OnSuccess<String>() {
@@ -156,7 +160,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 public void call(String result) {
                     note.setText(result);
                     note.setIsLoaded(true);
-                    viewHolderLocal.bindToNote(note, positionLocal);
+                    viewHolderLocal.bindToNote(note, _fileList, positionLocal);
 
                     // Now this view has been fully loaded, allow re-using it
                     viewHolderLocal.itemView.setHasTransientState(false);

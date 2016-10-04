@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 public class NoteListViewActivity extends AppCompatActivity implements MasterActivity {
     private RecyclerView _notesView;
     private SwipeRefreshLayout _swipeRefreshLayout;
@@ -108,10 +110,9 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     private void refresh() {
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
         if (dropboxStorage != null) {
-            OnSuccess<String[]> onSuccess = new OnSuccess<String[]>() {
+            OnSuccess<ArrayList<String>> onSuccess = new OnSuccess<ArrayList<String>>() {
                 @Override
-                public void call(String[] result) {
-                    CurrentFileList.getInstance().reload(result);
+                public void call(ArrayList<String> result) {
                     loadNotes(new FileList(result));
                 }
             };
@@ -138,9 +139,10 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     }
 
     @Override
-    public void switchToDetailActivity(int position) {
+    public void switchToDetailActivity(FileList fileList, int position) {
         Intent intent = new Intent(NoteListViewActivity.this, NoteDetailViewActivity.class);
-        intent.putExtra("pos", position);
+        intent.putStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME, fileList.getAsArrayList());
+        intent.putExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, position);
         startActivity(intent);
     }
 }

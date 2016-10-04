@@ -5,6 +5,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import java.util.ArrayList;
+
 public class NoteDetailViewActivity extends AppCompatActivity {
     private ViewPager _viewPager;
 
@@ -15,20 +17,24 @@ public class NoteDetailViewActivity extends AppCompatActivity {
         // Set context
         setContentView(R.layout.activity_note_view);
 
-        // Which note is it?
+        // Unpack the parameters
         Intent intent = getIntent();
-        int position = intent.getIntExtra("pos", -1);
+        ArrayList<String> files = intent.getStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME);
+        int position = intent.getIntExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, -1);
 
-        if (position >= 0) {
+        if (files != null && files.size() > 0 && position >= 0) {
             // Create the pager view
             _viewPager = (ViewPager) findViewById(R.id.note_view_pager);
 
             // Set the view adapter
-            NoteDetailViewPagerAdapter pagerAdapter = new NoteDetailViewPagerAdapter(getSupportFragmentManager());
+            NoteDetailViewPagerAdapter pagerAdapter = new NoteDetailViewPagerAdapter(getSupportFragmentManager(), files);
             _viewPager.setAdapter(pagerAdapter);
 
             // Set the current page
             _viewPager.setCurrentItem(position);
+        }
+        else {
+            // TODO: Show message "no notes to show"
         }
     }
 

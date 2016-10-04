@@ -9,6 +9,7 @@ import com.dropbox.core.v2.files.Metadata;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -29,14 +30,14 @@ public class DropboxStorage {
         _dropboxClient = dropboxClient;
     }
 
-    public void retrieveFileList(String searchString, OnSuccess<String[]> onSuccess, OnError onError) {
+    public void retrieveFileList(String searchString, OnSuccess<ArrayList<String>> onSuccess, OnError onError) {
         final String searchStringLocal = searchString;
 
-        AsyncWorkerTask.Worker<String[]> worker = new AsyncWorkerTask.Worker<String[]>() {
+        AsyncWorkerTask.Worker<ArrayList<String>> worker = new AsyncWorkerTask.Worker<ArrayList<String>>() {
             @Override
-            public String[] getResult() {
+            public ArrayList<String> getResult() {
                 try {
-                    List<String> filePaths = new LinkedList<>(); // TODO: consider ArrayList
+                    ArrayList<String> filePaths = new ArrayList<String>();
 
                     // TODO: or empty string
                     if (searchStringLocal == null) {
@@ -61,19 +62,21 @@ public class DropboxStorage {
                             filePaths.add("/" + fileMetadata.get(i).getName());
                         }
                     } else {
+                        // TODO: implement
                         filePaths.add("search results");
                     }
 
-                    return filePaths.toArray(new String[0]);
+                    return filePaths;
                 } catch (DbxException e) {
                     throw new RuntimeException(e);
                 }
             }
         };
 
-        new AsyncWorkerTask<String[]>(worker, onSuccess, onError).execute();
+        new AsyncWorkerTask<ArrayList<String>>(worker, onSuccess, onError).execute();
     }
 
+    // TODO: what if note is already deleted by then?
     public void getNoteContent(Note note, OnSuccess<String> onSuccess, OnError onError) {
         final Note noteLocal = note;
 

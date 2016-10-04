@@ -5,9 +5,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.ArrayList;
+
 public class NoteDetailViewPagerAdapter extends FragmentStatePagerAdapter {
-    public NoteDetailViewPagerAdapter(FragmentManager fragmentManager) {
+    private FileList _fileList;
+
+    public NoteDetailViewPagerAdapter(FragmentManager fragmentManager, ArrayList<String> files) {
         super(fragmentManager);
+
+        if (files == null)
+            throw new IllegalArgumentException("files");
+
+        _fileList = new FileList(files);
     }
 
     @Override
@@ -16,6 +25,7 @@ public class NoteDetailViewPagerAdapter extends FragmentStatePagerAdapter {
 
         // Pass the note position to the fragment
         Bundle args = new Bundle();
+        args.putStringArrayList(NoteDetailViewPageFragment.FILES_ARGUMENT_NAME, _fileList.getAsArrayList());
         args.putInt(NoteDetailViewPageFragment.POSITION_ARGUMENT_NAME, position);
         fragment.setArguments(args);
 
@@ -24,7 +34,7 @@ public class NoteDetailViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return CurrentFileList.getInstance().getLength();
+        return _fileList.getLength();
     }
 }
 

@@ -7,10 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 /**
  * Represents the fragment that is used to show the note detail view.
  */
 public class NoteDetailViewPageFragment extends Fragment {
+    public static final String FILES_ARGUMENT_NAME = "files";
     public static final String POSITION_ARGUMENT_NAME = "pos";
 
     @Override
@@ -21,10 +24,11 @@ public class NoteDetailViewPageFragment extends Fragment {
 
         // Which note is it?
         Bundle args = getArguments();
+        FileList fileList = new FileList(args.getStringArrayList(NoteDetailViewPageFragment.FILES_ARGUMENT_NAME));
         int position = args.getInt(NoteDetailViewPageFragment.POSITION_ARGUMENT_NAME);
 
         // Get the note
-        final Note note = NoteCache.getInstance().getNote(CurrentFileList.getInstance().getPath(position));
+        final Note note = NoteCache.getInstance().getNote(fileList.getPath(position));
 
         // Render - sync or async
         if (note.getIsLoaded()) {
