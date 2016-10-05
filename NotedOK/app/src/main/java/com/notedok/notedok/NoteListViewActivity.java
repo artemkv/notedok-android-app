@@ -12,12 +12,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
 public class NoteListViewActivity extends AppCompatActivity implements MasterActivity {
     private RecyclerView _notesView;
     private SwipeRefreshLayout _swipeRefreshLayout;
+    private ProgressBar _loadingIndicator;
     // Protects from re-loading the notes every time the activity resumes
     private boolean _notesLoaded;
 
@@ -67,6 +69,9 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
                 refresh();
             }
         });
+
+        // Set up the progress bar
+        _loadingIndicator = (ProgressBar) findViewById(R.id.notes_view_loading_indicator);
     }
 
     @Override
@@ -103,6 +108,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
 
         // Avoid reloading all data every time user switches from and to the app.
         if (!_notesLoaded) {
+            _loadingIndicator.setVisibility(View.VISIBLE);
             refresh();
         }
     }
@@ -136,6 +142,8 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         _swipeRefreshLayout.setRefreshing(false);
         // Avoid re-loading the notes next time the activity resumes
         _notesLoaded = true;
+        // Don't need loading indicator anymore
+        _loadingIndicator.setVisibility(View.GONE);
     }
 
     @Override
