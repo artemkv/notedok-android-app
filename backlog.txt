@@ -1,0 +1,37 @@
+EPIC: View
+
+
+STORY: Search
+
+As a regular user, I want to be able to search for notes that contain certain words/tags in titles.
+
+* Search button
+* Switches to the search activity
+* User can type search string in the textbox
+* Textbox has a watermark saying "Search in titles"
+* User can use voice
+* Once user start typing, the cross appears to the right of the textbox that allows to erase all the entered text
+* User can go back to the note list by clicking on the arrow
+* Auto-suggest contains the relevant stuff
+* Once you click on search button, the app goes to the search results, which is the note list view showing the search string and the number of results
+* For the rest, look like it is done in gmail and try to copy
+
+
+STORY: Partial wiki rendering on card view
+
+As a regular user, I want to see my note properly formatted in the partial view.
+
+* Links are NOT clickable
+* When clicking on the link, should simply go to the detail view
+* For the rest - all what is supported for the web, should be supported here
+
+
+STORY: Wiki rendering on detail view
+
+As a regular user, I want to see my note properly formatted in the detail view.
+
+* Links are clickable
+* For the rest - all what is supported for the web, should be supported here
+
+
+EPIC: Edit
