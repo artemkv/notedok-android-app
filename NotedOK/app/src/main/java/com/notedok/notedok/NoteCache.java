@@ -2,11 +2,18 @@ package com.notedok.notedok;
 
 import java.util.HashMap;
 
+/**
+ * Temporary storage for notes. Thread-safe.
+ * The notes can be used by the same activity or multiple activities.
+ * By re-using the same instances we reduce the memory pressure and avoid re-loading content again and again.
+ * We normally clean up the cache every time we refresh the note list.
+ * So there is no need to implement the logic to keep only the last 50 notes or something similar.
+ */
 public final class NoteCache {
     // Single instance
     private static NoteCache Instance = new NoteCache();
 
-    // TODO: Should notes stay here forever or should we keep only last 50 or something?
+    // Here the notes are actually cached
     private HashMap<String, Note> _notes = new HashMap<String, Note>();
 
     // Prevents instantiation
@@ -21,14 +28,20 @@ public final class NoteCache {
         return Instance;
     }
 
+    /**
+     * Returns the note for the given path. Returned note can be loaded or not.
+     * @param path The note path (the file path of the .txt file where the note is stored).
+     * @return The instance of the note. This note can be loaded or not.
+     */
     public Note getNote(String path) {
         if (path == null) {
             throw new IllegalArgumentException("path");
         }
 
-        // TODO: Needs to be synchronized?
-        if (_notes.containsKey(path)) {
-            return _notes.get(path);
+        synchronized (this) {
+            if (_notes.containsKey(path)) {
+                return _notes.get(path);
+            }
         }
 
         Note note = new Note();
@@ -37,13 +50,22 @@ public final class NoteCache {
         note.setText("Loading..."); // TODO: Replace with actual spinner?
         note.setIsLoaded(false);
 
-        // TODO: Needs to be synchronized?
-        _notes.put(path, note);
+        synchronized (this) {
+            // In the extremely unlikely scenario replaces the note, but it's not critical.
+            // The worst case 2 activities will get 2 different instances on note and will have to load them both.
+            _notes.put(path, note);
+        }
 
         return note;
     }
 
+    /**
+     * Clears the cache.
+     * Normally is called when the list of notes is refreshed.
+     */
     public void clear() {
-        _notes = new HashMap<String, Note>();
+        synchronized (this) {
+            _notes = new HashMap<String, Note>();
+        }
     }
 }
