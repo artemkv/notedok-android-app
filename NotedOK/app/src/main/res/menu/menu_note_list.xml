@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".NoteListViewActivity">
     <item
+        android:id="@+id/action_search"
+        android:title="@string/action_search"
+        android:icon="@drawable/ic_action_search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
