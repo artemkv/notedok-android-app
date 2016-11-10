@@ -89,7 +89,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
 
         // Setup search
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        MenuItemCompat.setOnActionExpandListener(searchItem,new MenuItemCompat.OnActionExpandListener() {
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 return true; // KEEP IT TO TRUE OR IT DOESN'T OPEN !!
@@ -110,6 +110,12 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        if (_searchString != null) {
+            MenuItemCompat.expandActionView(searchItem);
+            searchView.setQuery(_searchString, false);
+            searchView.clearFocus();
+        }
 
         return true;
     }
@@ -150,8 +156,6 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         super.onResume();
 
         // TODO: resume correctly
-
-        // TODO: if _searchString is not empty, update the SearchView
 
         // Avoid reloading all data every time user switches from and to the app.
         if (!_notesLoaded) {
