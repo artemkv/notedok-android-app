@@ -17,15 +17,14 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
-
 import java.util.ArrayList;
 
 public class NoteListViewActivity extends AppCompatActivity implements MasterActivity {
     private RecyclerView _notesView;
     private SwipeRefreshLayout _swipeRefreshLayout;
     private ProgressBar _loadingIndicator;
-    // Protects from re-loading the notes every time the activity resumes
-    private boolean _notesLoaded;
+    private boolean _notesLoaded; // Protects from re-loading the notes every time the activity resumes
+    private String _searchString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +75,11 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
 
         // Set up the progress bar
         _loadingIndicator = (ProgressBar) findViewById(R.id.notes_view_loading_indicator);
+
+        // Handle search intent
+        // For example, after the screen is rotated, the activity is re-created and _searchString is null
+        // So this line would restore it from the intent data
+        handleSearchIntent(getIntent());
     }
 
     @Override
@@ -85,6 +89,24 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
 
         // Setup search
         MenuItem searchItem = menu.findItem(R.id.action_search);
+        MenuItemCompat.setOnActionExpandListener(searchItem,new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true; // KEEP IT TO TRUE OR IT DOESN'T OPEN !!
+            }
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                // Programmatically trigger the search intent with empty search
+                if (_searchString != null) {
+                    // Exactly the same intent as search view uses
+                    Intent intent = new Intent(Intent.ACTION_SEARCH, null, getBaseContext(), NoteListViewActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    intent.putExtra(SearchManager.QUERY, (String) null);
+                    startActivity(intent);
+                }
+                return true; // OR FALSE IF YOU DIDN'T WANT IT TO CLOSE!
+            }
+        });
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -110,14 +132,35 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        // Set intent so if the activity is re-created (for example, if the screen rotates),
+        // we still keep the intent and can extract search string from it.
+        setIntent(intent);
+
+        // We get here after search, so we need to extract search string from the new intent
+        handleSearchIntent(intent);
+
+        // Even if notes are already loaded, force re-load
+        _notesLoaded = false;
+        _notesView.setAdapter(null);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
         // TODO: resume correctly
 
+        // TODO: if _searchString is not empty, update the SearchView
+
         // Avoid reloading all data every time user switches from and to the app.
         if (!_notesLoaded) {
+            _notesLoaded = true;
+
             _loadingIndicator.setVisibility(View.VISIBLE);
+
+            // onResume is called always, whether it is a new activity (start app/rotate screen) or just a new intent (search).
+            // So as long as we extracted the search string from the intent, notes should be loaded the same way.
             refresh();
         }
     }
@@ -137,7 +180,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
                     // TODO: error handling
                 }
             };
-            dropboxStorage.retrieveFileList(null, onSuccess, onError);
+            dropboxStorage.retrieveFileList(_searchString, onSuccess, onError);
         }
     }
 
@@ -149,8 +192,6 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         _notesView.setAdapter(noteListViewAdapter);
         // Stop the pull refresh animation
         _swipeRefreshLayout.setRefreshing(false);
-        // Avoid re-loading the notes next time the activity resumes
-        _notesLoaded = true;
         // Don't need loading indicator anymore
         _loadingIndicator.setVisibility(View.GONE);
     }
@@ -161,5 +202,14 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         intent.putStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME, fileList.getAsArrayList());
         intent.putExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, position);
         startActivity(intent);
+    }
+
+    /*
+    Extract the search string from the search intent
+     */
+    private void handleSearchIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            _searchString = intent.getStringExtra(SearchManager.QUERY);
+        }
     }
 }
