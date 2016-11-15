@@ -85,9 +85,8 @@ public class NoteDetailViewPageFragment extends Fragment {
         WebView webView = (WebView) noteDetailView.findViewById(R.id.note_view_text);
 
         String formattedText;
-        WikiToHtmlFormatter formatter = new WikiToHtmlFormatter();
         try {
-            formattedText = formatter.format(note.getText()); // TODO: hyperlinks
+            formattedText = renderNoteTextHtml(note.getText());
         } catch (RuntimeException e) {
             Log.e("NoteWebView", "Could not render note " + note.getPath(), e);
             formattedText = note.getText();
@@ -102,5 +101,19 @@ public class NoteDetailViewPageFragment extends Fragment {
 
     private String wrapHtml(Context context, String titleHtml, String textHtml) {
         return context.getString(R.string.note_web_view_wrapping_html, titleHtml, textHtml);
+    }
+
+    private String renderNoteTextHtml(String text) {
+        // replace '[http' with '[rmhttp'
+        text = text.replaceAll("(\\[http)", "[rmhttp");
+
+        // put link in square brackets
+        text = text.replaceAll("(\\bhttps?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])", "[$1]");
+
+        // replace '[rmhttp' with '[http'
+        text = text.replaceAll("(\\[rmhttp)", "[http");
+
+        WikiToHtmlFormatter formatter = new WikiToHtmlFormatter();
+        return formatter.format(text);
     }
 }
