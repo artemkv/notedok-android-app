@@ -3,6 +3,7 @@ package com.notedok.notedok;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -83,8 +84,14 @@ public class NoteDetailViewPageFragment extends Fragment {
     private void renderNoteText(Note note, View noteDetailView) {
         WebView webView = (WebView) noteDetailView.findViewById(R.id.note_view_text);
 
+        String formattedText;
         WikiToHtmlFormatter formatter = new WikiToHtmlFormatter();
-        String formattedText = formatter.format(note.getText()); // TODO: hyperlinks
+        try {
+            formattedText = formatter.format(note.getText()); // TODO: hyperlinks
+        } catch (RuntimeException e) {
+            Log.e("NoteWebView", "Could not render note " + note.getPath(), e);
+            formattedText = note.getText();
+        }
 
         webView.loadDataWithBaseURL(null,
             wrapHtml(webView.getContext(), note.getTitle(), formattedText),
