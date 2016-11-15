@@ -1,10 +1,13 @@
 package com.notedok.notedok;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -32,7 +35,8 @@ public class NoteDetailViewPageFragment extends Fragment {
 
         // Render - sync or async
         if (note.getIsLoaded()) {
-            renderNote(note, noteDetailView);
+            renderNoteTitle(note, noteDetailView);
+            renderNoteText(note, noteDetailView);
         }
         else {
             renderNoteTitle(note, noteDetailView);
@@ -46,7 +50,7 @@ public class NoteDetailViewPageFragment extends Fragment {
 
                     // TODO: can this view be re-used?
                     // TODO: basically, does it need to verify that the position is still the same?
-                    renderNote(note, noteDetailView);
+                    renderNoteText(note, noteDetailView);
                 }
             };
             OnError onError = new OnError() {
@@ -66,18 +70,30 @@ public class NoteDetailViewPageFragment extends Fragment {
         return noteDetailView;
     }
 
-    private void renderNote(Note note, View noteDetailView) {
-        // TODO: render properly
-        TextView titleView = (TextView)noteDetailView.findViewById(R.id.note_view_title);
-        titleView.setText(note.getTitle());
+    private void renderNoteTitle(Note note, View noteDetailView) {
+        WebView webView = (WebView) noteDetailView.findViewById(R.id.note_view_text);
 
-        TextView textView = (TextView)noteDetailView.findViewById(R.id.note_view_text);
-        textView.setText(note.getText());
+        webView.loadDataWithBaseURL(null,
+                wrapHtml(webView.getContext(), note.getTitle(), ""),
+                "text/html",
+                "UTF-8",
+                null);
     }
 
-    private void renderNoteTitle(Note note, View noteDetailView) {
-        // TODO: render properly
-        TextView titleView = (TextView) noteDetailView.findViewById(R.id.note_view_title);
-        titleView.setText(note.getTitle());
+    private void renderNoteText(Note note, View noteDetailView) {
+        WebView webView = (WebView) noteDetailView.findViewById(R.id.note_view_text);
+
+        WikiToHtmlFormatter formatter = new WikiToHtmlFormatter();
+        String formattedText = formatter.format(note.getText()); // TODO: hyperlinks
+
+        webView.loadDataWithBaseURL(null,
+            wrapHtml(webView.getContext(), note.getTitle(), formattedText),
+            "text/html",
+            "UTF-8",
+            null);
+    }
+
+    private String wrapHtml(Context context, String titleHtml, String textHtml) {
+        return context.getString(R.string.note_web_view_wrapping_html, titleHtml, textHtml);
     }
 }

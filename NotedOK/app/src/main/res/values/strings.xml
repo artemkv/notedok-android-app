@@ -4,4 +4,29 @@
     <string name="action_search">Search</string>
     <string name="button_edit">EDIT</string>
     <string name="search_hint">Search in titles</string>
+    <string name="note_web_view_wrapping_html" translatable="false">
+        <![CDATA[
+        <html>
+            <head>
+                <style type="text/css">
+                    div {
+                        padding: 4px 8px 2px 8px;
+                        overflow-x: hidden;
+                        overflow-y: auto;
+                        white-space:pre-wrap;
+                        text-overflow: ellipsis;
+
+                        line-height: 1.5;
+                        font-weight: 400;
+                        font-family: monospace;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>%1$s</h1>
+                <div>%2$s</div>
+            </body>
+        </html>"
+        ]]>
+    </string>
 </resources>
