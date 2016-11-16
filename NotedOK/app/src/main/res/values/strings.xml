@@ -53,6 +53,13 @@
                         overflow-x: auto;
                         background: #fbfbfb;
                     }
+
+                    div.note-text ul, div.note-text ol
+                    {
+                        white-space: normal;
+                        list-style-position: inside;
+                        display: inline-block;
+                    }
                 </style>
             </head>
             <body>
