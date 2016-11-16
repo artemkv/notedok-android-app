@@ -9,22 +9,59 @@
         <html>
             <head>
                 <style type="text/css">
-                    div {
+                    * {
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    .note-outer {
+                        margin: 16px;
+                        padding: 8px 0px;
+                    }
+
+                    .note-title {
+                        margin-top: 0px;
+                        margin-bottom: 16px;
+                        padding: 4px 8px 2px 8px;
+                        outline: none;
+
+                        font-size: large;
+                        font-weight: 400;
+                        font-family: "Segoe UI", arial, sans-serif;
+                    }
+
+                    .note-text {
                         padding: 4px 8px 2px 8px;
                         overflow-x: hidden;
                         overflow-y: auto;
-                        white-space:pre-wrap;
+                        white-space: pre-wrap;
                         text-overflow: ellipsis;
+                        outline: none;
 
                         line-height: 1.5;
+                        font-size: medium;
                         font-weight: 400;
                         font-family: monospace;
+                    }
+
+                    .codeblock
+                    {
+                        border: 1px dotted #a9a9a9;
+                        padding: 12px;
+                        font-size: medium;
+                        font-family: monospace;
+                        overflow-x: auto;
+                        background: #fbfbfb;
                     }
                 </style>
             </head>
             <body>
-                <h1>%1$s</h1>
-                <div>%2$s</div>
+                <div class=\'note-outer\'>
+                    <div class=\'note-inner\'>
+                        <div class=\'note-title\'>%1$s</div>
+                        <div class=\'note-text\'>%2$s</div>
+                    </div>
+                </div>
             </body>
         </html>"
         ]]>
