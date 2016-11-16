@@ -110,6 +110,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
 
         if (_searchString != null) {
             MenuItemCompat.expandActionView(searchItem);
@@ -122,17 +123,18 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO: do we need this?
+        // TODO: do we need this? Currently commented out the layout in the menu_note_list.xml
 
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // TODO: if we need settings, uncomment
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
