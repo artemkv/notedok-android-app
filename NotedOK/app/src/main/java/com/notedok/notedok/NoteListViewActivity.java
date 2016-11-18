@@ -58,8 +58,15 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                // TODO: remove when not needed anymore
+/*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+
+                Intent intent = new Intent(NoteListViewActivity.this, NoteEditorActivity.class);
+                // TODO: pass data somehow
+                // intent.putStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME, fileList.getAsArrayList());
+                // intent.putExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, position);
+                startActivity(intent);
             }
         });
 
