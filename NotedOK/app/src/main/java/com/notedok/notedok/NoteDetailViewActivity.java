@@ -20,6 +20,9 @@ public class NoteDetailViewActivity extends AppCompatActivity {
         // Set context
         setContentView(R.layout.activity_note_view);
 
+        // Display the back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Unpack the parameters
         Intent intent = getIntent();
         _files = intent.getStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME);
@@ -57,33 +60,30 @@ public class NoteDetailViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // back button in action bar clicked; goto parent activity.
+                this.finish();
+                return true;
+            case R.id.action_edit:
+                int position = _viewPager.getCurrentItem();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_edit) {
-            int position = _viewPager.getCurrentItem();
-
-            // TODO: disable the button completely?
-            if (_files != null && _files.size() > 0 && position >= 0) {
-                Intent intent = new Intent(NoteDetailViewActivity.this, NoteEditorActivity.class);
-                // TODO: pass data somehow
-                // TODO: currently does not pass the current position correctly - the one passed is the initial one which never gets updated
-                intent.putStringArrayListExtra(NoteEditorActivity.FILES_INTENT_EXTRA_NAME, _files);
-                intent.putExtra(NoteEditorActivity.POSITION_INTENT_EXTRA_NAME, position);
-                startActivity(intent);
-            }
-            else {
-                // Do not react - nothing to edit.
-            }
-
-            // Handled
-            return true;
+                // TODO: disable the button completely?
+                if (_files != null && _files.size() > 0 && position >= 0) {
+                    Intent intent = new Intent(NoteDetailViewActivity.this, NoteEditorActivity.class);
+                    // TODO: pass data somehow
+                    // TODO: currently does not pass the current position correctly - the one passed is the initial one which never gets updated
+                    intent.putStringArrayListExtra(NoteEditorActivity.FILES_INTENT_EXTRA_NAME, _files);
+                    intent.putExtra(NoteEditorActivity.POSITION_INTENT_EXTRA_NAME, position);
+                    startActivity(intent);
+                }
+                else {
+                    // Do not react - nothing to edit.
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
 }

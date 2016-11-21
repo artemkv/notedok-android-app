@@ -44,7 +44,8 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".NoteDetailViewActivity"/>
+        <activity android:name=".NoteDetailViewActivity"
+                  android:label="" />
         <activity android:name=".NoteEditorActivity">
         </activity>
     </application>

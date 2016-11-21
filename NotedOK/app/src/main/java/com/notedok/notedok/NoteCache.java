@@ -47,7 +47,7 @@ public final class NoteCache {
         Note note = new Note();
         note.setPath(path);
         note.setTitle(TitleToPathConverter.getInstance().getTitle(path));
-        note.setText("Loading..."); // TODO: Replace with actual spinner?
+        note.setText("");
         note.setIsLoaded(false);
 
         synchronized (this) {

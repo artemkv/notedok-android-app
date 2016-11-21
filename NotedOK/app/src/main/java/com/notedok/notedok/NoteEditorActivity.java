@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.widget.EditText;
 
 import java.util.ArrayList;
@@ -25,7 +26,10 @@ public class NoteEditorActivity extends AppCompatActivity {
         // Set context
         setContentView(R.layout.activity_note_editor);
 
-        // Set up recycler view
+        // Display the back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Set up the view
         _titleEditor = (EditText)findViewById(R.id.note_editor_title);
         _textEditor = (EditText)findViewById(R.id.note_editor_text);
 
@@ -39,12 +43,29 @@ public class NoteEditorActivity extends AppCompatActivity {
             FileList fileList = new FileList(_files);
             final Note note = NoteCache.getInstance().getNote(fileList.getPath(_position));
 
+            // TODO: if !note.getIsLoaded(), load async with progress bar
+
             _titleEditor.setText(note.getTitle());
             _textEditor.setText(note.getText());
+
+            setTitle("Edit note"); // TODO: resources
         }
         else
         {
+            setTitle("New note"); // TODO: resources
             // TODO: this is new note or what
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // back button in action bar clicked; goto parent activity.
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
