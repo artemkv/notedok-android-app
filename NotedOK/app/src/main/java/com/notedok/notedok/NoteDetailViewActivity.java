@@ -11,10 +11,7 @@ import java.util.ArrayList;
 
 public class NoteDetailViewActivity extends AppCompatActivity {
     private ViewPager _viewPager;
-
     private ArrayList<String> _files;
-    // TODO: this doesn't work - the value never get updated
-    private int _position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +23,9 @@ public class NoteDetailViewActivity extends AppCompatActivity {
         // Unpack the parameters
         Intent intent = getIntent();
         _files = intent.getStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME);
-        _position = intent.getIntExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, -1);
+        int position = intent.getIntExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, -1);
 
-        if (_files != null && _files.size() > 0 && _position >= 0) {
+        if (_files != null && _files.size() > 0 && position >= 0) {
             // Create the pager view
             _viewPager = (ViewPager) findViewById(R.id.note_view_pager);
 
@@ -37,7 +34,7 @@ public class NoteDetailViewActivity extends AppCompatActivity {
             _viewPager.setAdapter(pagerAdapter);
 
             // Set the current page
-            _viewPager.setCurrentItem(_position);
+            _viewPager.setCurrentItem(position);
         }
         else {
             // TODO: Show message "no notes to show"
@@ -67,15 +64,19 @@ public class NoteDetailViewActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_edit) {
+            int position = _viewPager.getCurrentItem();
 
             // TODO: disable the button completely?
-            if (_files != null && _files.size() > 0 && _position >= 0) {
+            if (_files != null && _files.size() > 0 && position >= 0) {
                 Intent intent = new Intent(NoteDetailViewActivity.this, NoteEditorActivity.class);
                 // TODO: pass data somehow
                 // TODO: currently does not pass the current position correctly - the one passed is the initial one which never gets updated
                 intent.putStringArrayListExtra(NoteEditorActivity.FILES_INTENT_EXTRA_NAME, _files);
-                intent.putExtra(NoteEditorActivity.POSITION_INTENT_EXTRA_NAME, _position);
+                intent.putExtra(NoteEditorActivity.POSITION_INTENT_EXTRA_NAME, position);
                 startActivity(intent);
+            }
+            else {
+                // Do not react - nothing to edit.
             }
 
             // Handled
