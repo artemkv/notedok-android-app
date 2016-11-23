@@ -71,6 +71,13 @@ public class NoteDetailViewPageFragment extends Fragment {
         return noteDetailView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // TODO: check if can re-load note
+    }
+
     private void renderNoteTitle(Note note, View noteDetailView) {
         WebView webView = (WebView) noteDetailView.findViewById(R.id.note_view_text);
 

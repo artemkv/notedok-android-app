@@ -5,13 +5,19 @@ import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.files.RelocationErrorException;
 import com.dropbox.core.v2.files.SearchBuilder;
 import com.dropbox.core.v2.files.SearchMatch;
 import com.dropbox.core.v2.files.SearchResult;
+import com.dropbox.core.v2.files.UploadBuilder;
+import com.dropbox.core.v2.files.WriteMode;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -104,7 +110,6 @@ public class DropboxStorage {
         new AsyncWorkerTask<ArrayList<String>>(worker, onSuccess, onError).execute();
     }
 
-    // TODO: what if note is already deleted by then?
     public void getNoteContent(Note note, OnSuccess<String> onSuccess, OnError onError) {
         final Note noteLocal = note;
 
@@ -114,7 +119,97 @@ public class DropboxStorage {
                 try {
                     OutputStream stream = new ByteArrayOutputStream();
                     _dropboxClient.files().download(noteLocal.getPath()).download(stream);
-                    return stream.toString();
+                    String content = stream.toString();
+                    stream.close();
+                    return content;
+                } catch (DbxException | IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        new AsyncWorkerTask<String>(worker, onSuccess, onError).execute();
+    }
+
+    /**
+     * Renames the note by changing the corresponding file path to the newPath. The file paths are in the format "/my file.txt".
+     * File paths are taken as the are, no additional processing is done by this method. Business code is supposed to be able to properly convert the note title to the file path by its own means.
+     * That means that the newPath is supposed to be file system-friendly, and don't use any special characters that are not allowed by any existing file system.
+     * In practice that means it should not contain any of the following characters: /?<>\:*|"^
+     * The file with oldPath is supposed to exist, ot the error will be returned.
+     * If the note with newPath already exists, the method will return a non-specific error. The caller is supposed to enforce the uniqueness of the file by its own means and try again.
+     * Uniqueness can be ensured by applying the timestamp to the file path, i.e. "/my file~~1426963430173.txt"
+     * @param oldPath The old path of the file with the note
+     * @param newPath The new path of the file with the note
+     * @param onSuccess The callback that is to be called on success.
+     * @param onError The callback that is to be called on error.
+     */
+    public void renameNote(String oldPath, String newPath, OnSuccess<String> onSuccess, OnError onError) {
+        final String oldPathLocal = oldPath;
+        final String newPathLocal = newPath;
+
+        AsyncWorkerTask.Worker<String> worker = new AsyncWorkerTask.Worker<String>() {
+            @Override
+            public String getResult() {
+                try {
+                    _dropboxClient.files().move(oldPathLocal, newPathLocal);
+                    return newPathLocal;
+                } catch (DbxException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        new AsyncWorkerTask<String>(worker, onSuccess, onError).execute();
+    }
+
+    /**
+     * Saves the note text to the file with path specified in the Path property.
+     * The note is supposed to have Path property set to file path in format "/my file.txt" (exactly as retrieved by retrieveFileList).
+     * Dropbox API treats the passed data as a binary stream and saves it to the file without any extra processing.
+     * The method converts the UTF-16 string to the byte array using UTF-8 encoding.
+     *
+     * If the note with the same path already exists, parameter "overwrite" controls the method behavior.
+     * For a new note, overwrite should be set to false to avoid replacing the existing note. If the note with the same path already exists, this method will auto-rename the note.
+     * Auto-rename is implemented by means of Dropbox API according their auto-rename strategy.
+     * To avoid that the new note changes its title after saving, caller is supposed to analyze the returned path, detect auto-rename and rename it again ensuring the uniqueness by its own means.
+     * Uniqueness can be ensured by applying the timestamp to the file path, i.e. "/my file~~1426963430173.txt"
+     *
+     * For an existing note, overwrite should be set to true, to avoid creating a second copy of the same note.
+     *
+     * When restoring a deleted note, overwrite should be set to false, to avoid replacing the existing note. If the note with the same path already exists, this method will auto-rename the note.
+     * It is OK for the restored note to keep the auto-renamed path.
+     *
+     * Empty path is not allowed. If the note title is empty, the caller is supposed to ensure the path is non-empty, by applying the timestamp to the file path, i.e. "/~~1426963430173.txt"
+     * When note is saved successfully, this method returns the actual path the note is saved to.
+     * @param note
+     * @param overwrite
+     * @param onSuccess
+     * @param onError
+     */
+    public void saveNote(Note note, boolean overwrite, OnSuccess<String> onSuccess, OnError onError) {
+        final Note noteLocal = note;
+        final boolean overwriteLocal = overwrite;
+
+        AsyncWorkerTask.Worker<String> worker = new AsyncWorkerTask.Worker<String>() {
+            @Override
+            public String getResult() {
+                try {
+                    UploadBuilder uploadBuilder = _dropboxClient.files().uploadBuilder(noteLocal.getPath());
+
+                    // TODO: when file size is 0 bytes, add + auto-rename is not applied. Maybe check with Dropbox support
+                    if (overwriteLocal) {
+                        uploadBuilder.withMode(WriteMode.OVERWRITE);
+                    } else {
+                        uploadBuilder.withMode(WriteMode.ADD).withAutorename(true);
+                    }
+
+                    // TODO: is there byte order mark?
+                    InputStream stream = new ByteArrayInputStream(noteLocal.getText().getBytes("UTF-8"));
+                    FileMetadata fileMetadata = uploadBuilder.uploadAndFinish(stream);
+                    stream.close();
+
+                    return "/" + fileMetadata.getName();
                 } catch (DbxException | IOException e) {
                     throw new RuntimeException(e);
                 }
