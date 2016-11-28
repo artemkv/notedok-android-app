@@ -22,6 +22,8 @@ public class NoteEditorActivity extends AppCompatActivity {
     private Note _note;
     private boolean _isNew;
 
+    // TODO: check that changes are preserved after resuming the activity (orientation change, switch between apps)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
