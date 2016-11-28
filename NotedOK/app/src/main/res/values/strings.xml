@@ -1,14 +1,20 @@
 <resources>
+    <!-- App name - do not translate -->
     <string name="app_name">NotedOK</string>
-    <string name="action_settings">Settings</string>
+    <!-- Actions -->
     <string name="action_search">Search</string>
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
-    <string name="button_edit">EDIT</string>
+    <!-- Search view watermark -->
     <string name="search_hint">Search in titles</string>
+    <!-- Editor watermarks -->
     <string name="note_editor_new_title_hint">New note</string>
     <string name="note_editor_title_hint">No title</string>
     <string name="note_editor_text_hint">Type your text here</string>
+    <!-- Editor Activity Titles -->
+    <string name="note_editor_new_note_activity_title">New note</string>
+    <string name="note_editor_existing_note_activity_title">Edit note</string>
+    <!-- Do not translate -->
     <string name="note_web_view_wrapping_html" translatable="false">
         <![CDATA[
         <html>

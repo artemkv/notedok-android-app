@@ -44,7 +44,7 @@ public class NoteEditorActivity extends AppCompatActivity {
         _position = intent.getIntExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, -1);
 
         if (_files != null && _files.size() > 0 && _position >= 0) {
-            setTitle("Edit note"); // TODO: resources
+            setTitle(R.string.note_editor_existing_note_activity_title);
 
             // Get the note
             FileList fileList = new FileList(_files);
@@ -59,7 +59,7 @@ public class NoteEditorActivity extends AppCompatActivity {
         }
         else
         {
-            setTitle("New note"); // TODO: resources
+            setTitle(R.string.note_editor_new_note_activity_title);
 
             // New note
             _note = new Note();
