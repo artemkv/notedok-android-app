@@ -109,41 +109,73 @@ public class NoteEditorActivity extends AppCompatActivity {
             if (_isNew) {
                 // Note is not yet in the cache, so it is safe to set path
                 _note.setPath(TitleToPathConverter.getInstance().generatePath(_note.getTitle(), false));
-                saveNoteText();
+                saveNewNote();
             }
             else {
                 // TODO: cache might get invalid, if path changes
-
-                // TODO: if changed
-                // saveNoteTitle();
-                // TODO: if changed
-                // saveNoteText();
+                // TODO: only if changed ?
+                saveExistingNote();
             }
         }
     }
 
-    /**
-     * Saves the note title
-     * Should be called before saveNoteText
-     */
-    private void saveNoteTitle() {
-        // TODO: can we combine it with saveNoteTitle to avoid order dependency?
-    }
-
-    /**
-     * Saves the note text
-     * Should be called after saveNoteTitle
-     */
-    private void saveNoteText() {
+    private void saveExistingNote() {
         OnSuccess<String> onSuccess = new OnSuccess<String>() {
             @Override
             public void call(String result) {
-                if (_isNew) {
-                    handleNewNoteAutoRenamingByDropbox(result);
-                } else {
-                    // For the existing note, we are done
-                    finishEditing();
-                }
+                // Remember the final path
+                // TODO: invalidate cache
+                _note.setPath(result);
+
+                // Continue with the note content
+                saveExistingNoteText();
+            }
+        };
+        OnError onError = new OnError() {
+            @Override
+            public void call(Exception e) {
+                // Try again with unique title
+                saveExistingNoteWithUniqueTitle();
+            }
+        };
+
+        // First save the title
+        String newPath = TitleToPathConverter.getInstance().generatePath(_note.getTitle(), false);
+        DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+        dropboxStorage.renameNote(_note.getPath(), newPath, onSuccess, onError);
+    }
+
+    private void saveExistingNoteWithUniqueTitle() {
+        OnSuccess<String> onSuccess = new OnSuccess<String>() {
+            @Override
+            public void call(String result) {
+                // Remember the final path
+                // TODO: invalidate cache
+                _note.setPath(result);
+
+                // Continue with the note content
+                saveExistingNoteText();
+            }
+        };
+        OnError onError = new OnError() {
+            @Override
+            public void call(Exception e) {
+                // TODO: error handling
+            }
+        };
+
+        // So we could not save the note with the previous title, try make the title unique and save again
+        String newPath = TitleToPathConverter.getInstance().generatePath(_note.getTitle(), true);
+        DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+        dropboxStorage.renameNote(_note.getPath(), newPath, onSuccess, onError);
+    }
+
+    private void saveExistingNoteText() {
+        OnSuccess<String> onSuccess = new OnSuccess<String>() {
+            @Override
+            public void call(String result) {
+                // For the existing note, we are done
+                finishEditing();
             }
         };
         OnError onError = new OnError() {
@@ -154,7 +186,25 @@ public class NoteEditorActivity extends AppCompatActivity {
         };
 
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
-        dropboxStorage.saveNote(_note, !_isNew, onSuccess, onError);
+        dropboxStorage.saveNote(_note, true, onSuccess, onError);
+    }
+
+    private void saveNewNote() {
+        OnSuccess<String> onSuccess = new OnSuccess<String>() {
+            @Override
+            public void call(String result) {
+                handleNewNoteAutoRenamingByDropbox(result);
+            }
+        };
+        OnError onError = new OnError() {
+            @Override
+            public void call(Exception e) {
+                // TODO: error handling
+            }
+        };
+
+        DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+        dropboxStorage.saveNote(_note, false, onSuccess, onError);
     }
 
     /**
