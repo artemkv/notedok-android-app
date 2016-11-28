@@ -6,6 +6,7 @@ import com.dropbox.core.http.OkHttp3Requestor;
 import com.dropbox.core.v2.DbxClientV2;
 
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -55,6 +56,7 @@ public final class DropboxStorageProvider {
      * If the Dropbox storage is not initialized (authentication is not finished), returns null.
      * @return Dropbox storage if initialized; otherwise, null.
      */
+    @Nullable
     public static DropboxStorage getDropboxStorage() {
         if (!Initialized) {
             throw new IllegalStateException("The class is not initialized. Call initialize first.");

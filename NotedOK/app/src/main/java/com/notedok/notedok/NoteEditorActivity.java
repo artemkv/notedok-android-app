@@ -19,8 +19,6 @@ public class NoteEditorActivity extends AppCompatActivity {
     private EditText _titleEditor;
     private EditText _textEditor;
 
-    private ArrayList<String> _files;
-    private int _position;
     private Note _note;
     private boolean _isNew;
 
@@ -40,15 +38,15 @@ public class NoteEditorActivity extends AppCompatActivity {
 
         // Unpack the parameters
         Intent intent = getIntent();
-        _files = intent.getStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME);
-        _position = intent.getIntExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, -1);
+        ArrayList<String> files = intent.getStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME);
+        int position = intent.getIntExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, -1);
 
-        if (_files != null && _files.size() > 0 && _position >= 0) {
+        if (files != null && files.size() > 0 && position >= 0) {
             setTitle(R.string.note_editor_existing_note_activity_title);
 
             // Get the note
-            FileList fileList = new FileList(_files);
-            _note = NoteCache.getInstance().getNote(fileList.getPath(_position));
+            FileList fileList = new FileList(files);
+            _note = NoteCache.getInstance().getNote(fileList.getPath(position));
 
             // Render - sync or async
             _titleEditor.setText(_note.getTitle());
@@ -56,6 +54,7 @@ public class NoteEditorActivity extends AppCompatActivity {
                 _textEditor.setText(_note.getText());
             } else {
                 // TODO: progress bar
+                // TODO: only allow editing note text when it is fully loaded.
                 OnSuccess<String> onSuccess = new OnSuccess<String>() {
                     @Override
                     public void call(String result) {
@@ -284,7 +283,7 @@ public class NoteEditorActivity extends AppCompatActivity {
      * !Make sure to not have any async actions pending.
      */
     private void finishEditing() {
-        // TODO: this is hardcoded
+        // TODO: this is hardcoded piece. Should be replaced with something decent.
         Context context = getApplicationContext();
         CharSequence text = "Saved";
         int duration = Toast.LENGTH_SHORT;
