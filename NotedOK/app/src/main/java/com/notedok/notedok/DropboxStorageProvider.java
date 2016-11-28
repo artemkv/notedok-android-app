@@ -68,6 +68,7 @@ public final class DropboxStorageProvider {
             // TODO: else return offline storage
         }
 
+        // TODO: do the final check that every time we call this method there is a null check
         return DropboxStorage;
     }
 

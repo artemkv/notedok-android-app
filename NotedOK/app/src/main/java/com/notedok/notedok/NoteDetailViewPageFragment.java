@@ -35,14 +35,11 @@ public class NoteDetailViewPageFragment extends Fragment {
         final Note note = NoteCache.getInstance().getNote(fileList.getPath(position));
 
         // Render - sync or async
+        renderNoteTitle(note, noteDetailView);
         if (note.getIsLoaded()) {
-            renderNoteTitle(note, noteDetailView);
             renderNoteText(note, noteDetailView);
-        }
-        else {
-            renderNoteTitle(note, noteDetailView);
+        } else {
             // TODO: progress bar
-
             OnSuccess<String> onSuccess = new OnSuccess<String>() {
                 @Override
                 public void call(String result) {
