@@ -16,11 +16,13 @@ public class NoteEditorActivity extends AppCompatActivity {
     public static final String FILES_INTENT_EXTRA_NAME = "files";
     public static final String POSITION_INTENT_EXTRA_NAME = "pos";
 
-    EditText _titleEditor;
-    EditText _textEditor;
+    private EditText _titleEditor;
+    private EditText _textEditor;
 
     private ArrayList<String> _files;
     private int _position;
+    private Note _note;
+    private boolean _isNew;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,21 +44,30 @@ public class NoteEditorActivity extends AppCompatActivity {
         _position = intent.getIntExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, -1);
 
         if (_files != null && _files.size() > 0 && _position >= 0) {
+            setTitle("Edit note"); // TODO: resources
+
             // Get the note
             FileList fileList = new FileList(_files);
-            final Note note = NoteCache.getInstance().getNote(fileList.getPath(_position));
+            _note = NoteCache.getInstance().getNote(fileList.getPath(_position));
 
             // TODO: if !note.getIsLoaded(), load async with progress bar
 
-            _titleEditor.setText(note.getTitle());
-            _textEditor.setText(note.getText());
+            _titleEditor.setText(_note.getTitle());
+            _textEditor.setText(_note.getText());
 
-            setTitle("Edit note"); // TODO: resources
+            _isNew = false;
         }
         else
         {
             setTitle("New note"); // TODO: resources
-            // TODO: this is new note or what
+
+            // New note
+            _note = new Note();
+            _note.setTitle("");
+            _note.setText("");
+            _note.setIsLoaded(true);
+
+            _isNew = true;
         }
     }
 
@@ -72,20 +83,137 @@ public class NoteEditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // back button in action bar clicked; goto parent activity.
+                // TODO: if modified, ask whether to save changes
                 this.finish();
                 return true;
             case R.id.action_save:
-                // TODO: replace with actual logic
-                Context context = getApplicationContext();
-                CharSequence text = "Saved";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-
-                this.finish();
+                saveNote();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Saves the complete note, new or existing.
+     */
+    private void saveNote() {
+        // TODO: only allow saving note that is fully loaded. Can we disable save icon completely before the note is loaded?
+        if (_note.getIsLoaded()) {
+            String newTitle = _titleEditor.getText().toString(); // TODO: 50 char max
+            String newText = _textEditor.getText().toString();
+
+            _note.setTitle(newTitle);
+            _note.setText(newText);
+
+            if (_isNew) {
+                // Note is not yet in the cache, so it is safe to set path
+                _note.setPath(TitleToPathConverter.getInstance().generatePath(_note.getTitle(), false));
+                saveNoteText();
+            }
+            else {
+                // TODO: cache might get invalid, if path changes
+
+                // TODO: if changed
+                // saveNoteTitle();
+                // TODO: if changed
+                // saveNoteText();
+            }
+        }
+    }
+
+    /**
+     * Saves the note title
+     * Should be called before saveNoteText
+     */
+    private void saveNoteTitle() {
+        // TODO: can we combine it with saveNoteTitle to avoid order dependency?
+    }
+
+    /**
+     * Saves the note text
+     * Should be called after saveNoteTitle
+     */
+    private void saveNoteText() {
+        OnSuccess<String> onSuccess = new OnSuccess<String>() {
+            @Override
+            public void call(String result) {
+                if (_isNew) {
+                    handleNewNoteAutoRenamingByDropbox(result);
+                } else {
+                    // For the existing note, we are done
+                    finishEditing();
+                }
+            }
+        };
+        OnError onError = new OnError() {
+            @Override
+            public void call(Exception e) {
+                // TODO: error handling
+            }
+        };
+
+        DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+        dropboxStorage.saveNote(_note, !_isNew, onSuccess, onError);
+    }
+
+    /**
+     * Handles the situation when new note was created with the same title as some existing note
+     * Because of overwrite=false we pass when saving the new note, dropbox will rename it to ensure the name is unique
+     * We have to catch it and ensure uniqueness by our own means
+     * @param path The new path, generated by Dropbox
+     */
+    private void handleNewNoteAutoRenamingByDropbox(String path) {
+        // Always update the note path to the actual value to be able to rename it in the future
+        // Note is not yet in the cache, so it is safe to set path
+        _note.setPath(path);
+
+        // Check whether dropbox renamed the note to ensure uniqueness
+        String newTitle = TitleToPathConverter.getInstance().getTitle(_note.getPath());
+        if (!_note.getTitle().equals(newTitle)) {
+            // Force the unique title from the user-provided title
+            String newPath = TitleToPathConverter.getInstance().generatePath(_note.getTitle(), true);
+
+            OnSuccess<String> onSuccess = new OnSuccess<String>() {
+                @Override
+                public void call(String result) {
+                    // Remember the final path
+                    // Note is not yet in the cache, so it is safe to set path
+                    _note.setPath(result);
+
+                    // Now we are also done for the new note
+                    finishEditing();
+                }
+            };
+            OnError onError = new OnError() {
+                @Override
+                public void call(Exception e) {
+                    // TODO: error handling
+                }
+            };
+
+            DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+            dropboxStorage.renameNote(_note.getPath(), newPath, onSuccess, onError);
+        }
+        else {
+            // Nothing else to do for the new note
+            finishEditing();
+        }
+    }
+
+    /**
+     * This method finishes the editing activity and goes back to the previous one.
+     * !Make sure to not have any async actions pending.
+     */
+    private void finishEditing() {
+        // TODO: this is hardcoded
+        Context context = getApplicationContext();
+        CharSequence text = "Saved";
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+
+        // Go back to the previous activity
+        this.finish();
     }
 }
