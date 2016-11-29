@@ -14,6 +14,7 @@ public class NoteDetailViewActivity extends AppCompatActivity {
 
     private ViewPager _viewPager;
     private ArrayList<String> _files;
+    private boolean _noteEdited;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class NoteDetailViewActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onHomeAction();
+                goBack();
                 return true;
             case R.id.action_edit:
                 onEditAction();
@@ -65,8 +66,19 @@ public class NoteDetailViewActivity extends AppCompatActivity {
         }
     }
 
-    private void onHomeAction() {
+    @Override
+    public void onBackPressed() {
+        goBack();
+    }
+
+    private void goBack() {
         // back button in action bar clicked; goto parent activity.
+        Intent intent = new Intent();
+        if (_noteEdited) {
+            setResult(RESULT_OK, intent);
+        } else {
+            setResult(RESULT_CANCELED, intent);
+        }
         finish();
     }
 
@@ -90,6 +102,8 @@ public class NoteDetailViewActivity extends AppCompatActivity {
         if (requestCode == EDIT_NOTE_REQUEST_CODE) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
+                _noteEdited = true;
+
                 String newPath = data.getStringExtra(NoteEditorActivity.NEW_PATH_INTENT_EXTRA_NAME);
                 reloadNote(newPath);
             }

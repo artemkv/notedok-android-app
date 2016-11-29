@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 public class NoteListViewActivity extends AppCompatActivity implements MasterActivity {
     private static final int CREATE_NEW_NOTE_REQUEST_CODE = 1;
+    private static final int SHOW_NOTE_DETAILS_REQUEST_CODE = 2;
 
     private RecyclerView _notesView;
     private SwipeRefreshLayout _swipeRefreshLayout;
@@ -207,7 +208,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         Intent intent = new Intent(NoteListViewActivity.this, NoteDetailViewActivity.class);
         intent.putStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME, fileList.getAsArrayList());
         intent.putExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, position);
-        startActivity(intent);
+        startActivityForResult(intent, SHOW_NOTE_DETAILS_REQUEST_CODE);
     }
 
     /*
@@ -229,6 +230,11 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == CREATE_NEW_NOTE_REQUEST_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                forceReload();
+            }
+        } else if (requestCode == SHOW_NOTE_DETAILS_REQUEST_CODE) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 forceReload();
