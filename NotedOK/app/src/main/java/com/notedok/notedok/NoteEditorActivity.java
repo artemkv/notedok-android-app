@@ -293,6 +293,8 @@ public class NoteEditorActivity extends AppCompatActivity {
         toast.show();
 
         // Go back to the previous activity
-        this.finish();
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }

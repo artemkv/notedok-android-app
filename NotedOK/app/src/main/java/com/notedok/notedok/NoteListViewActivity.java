@@ -20,6 +20,8 @@ import android.widget.ProgressBar;
 import java.util.ArrayList;
 
 public class NoteListViewActivity extends AppCompatActivity implements MasterActivity {
+    private static final int CREATE_NEW_NOTE_REQUEST_CODE = 1;
+
     private RecyclerView _notesView;
     private SwipeRefreshLayout _swipeRefreshLayout;
     private ProgressBar _loadingIndicator;
@@ -54,19 +56,11 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         setSupportActionBar(toolbar);
 
         // Set up buttons
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton addNewNoteButton = (FloatingActionButton) findViewById(R.id.add_new_note);
+        addNewNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: remove when not needed anymore
-/*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
-
-                Intent intent = new Intent(NoteListViewActivity.this, NoteEditorActivity.class);
-                // TODO: pass data somehow
-                // intent.putStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME, fileList.getAsArrayList());
-                // intent.putExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, position);
-                startActivity(intent);
+                onAddNewNoteButtonClick();
             }
         });
 
@@ -156,8 +150,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         handleSearchIntent(intent);
 
         // Even if notes are already loaded, force re-load
-        _notesLoaded = false;
-        _notesView.setAdapter(null);
+        forceReload();
     }
 
     @Override
@@ -224,5 +217,28 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             _searchString = intent.getStringExtra(SearchManager.QUERY);
         }
+    }
+
+    private void onAddNewNoteButtonClick() {
+        Intent intent = new Intent(NoteListViewActivity.this, NoteEditorActivity.class);
+        // We don't need extra data, so just start intent
+        startActivityForResult(intent, CREATE_NEW_NOTE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == CREATE_NEW_NOTE_REQUEST_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                forceReload();
+            }
+        }
+    }
+
+    private void forceReload() {
+        // The actual reload happens only in onResume
+        _notesLoaded = false;
+        _notesView.setAdapter(null);
     }
 }
