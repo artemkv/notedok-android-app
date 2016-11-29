@@ -136,7 +136,6 @@ public class NoteEditorActivity extends AppCompatActivity {
                     _note.setPath(TitleToPathConverter.getInstance().generatePath(_note.getTitle(), false));
                     saveNewNote();
                 } else {
-                    // TODO: cache might get invalid, if path changes
                     // TODO: only if changed ?
                     saveExistingNote();
                 }
@@ -152,8 +151,10 @@ public class NoteEditorActivity extends AppCompatActivity {
         OnSuccess<String> onSuccess = new OnSuccess<String>() {
             @Override
             public void call(String result) {
+                // Invalidate cache
+                NoteCache.getInstance().removeFromCache(_note.getPath());
+
                 // Remember the final path
-                // TODO: invalidate cache
                 _note.setPath(result);
 
                 // Continue with the note content
@@ -178,8 +179,10 @@ public class NoteEditorActivity extends AppCompatActivity {
         OnSuccess<String> onSuccess = new OnSuccess<String>() {
             @Override
             public void call(String result) {
+                // Invalidate cache
+                NoteCache.getInstance().removeFromCache(_note.getPath());
+
                 // Remember the final path
-                // TODO: invalidate cache
                 _note.setPath(result);
 
                 // Continue with the note content

@@ -68,4 +68,20 @@ public final class NoteCache {
             _notes = new HashMap<String, Note>();
         }
     }
+
+    /**
+     * Removes the note from cache to force reloading it
+     * @param path The note path
+     */
+    public void removeFromCache(String path) {
+        if (path == null) {
+            throw new IllegalArgumentException("path");
+        }
+
+        synchronized (this) {
+            if (_notes.containsKey(path)) {
+                _notes.remove(path);
+            }
+        }
+    }
 }
