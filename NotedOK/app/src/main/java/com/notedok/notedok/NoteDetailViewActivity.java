@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 
 public class NoteDetailViewActivity extends AppCompatActivity {
+    private static final int EDIT_NOTE_REQUEST_CODE = 1;
+
     private ViewPager _viewPager;
     private ArrayList<String> _files;
 
@@ -38,8 +40,7 @@ public class NoteDetailViewActivity extends AppCompatActivity {
 
             // Set the current page
             _viewPager.setCurrentItem(position);
-        }
-        else {
+        } else {
             // TODO: Show message "no notes to show"
         }
     }
@@ -62,28 +63,43 @@ public class NoteDetailViewActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // back button in action bar clicked; goto parent activity.
-                this.finish();
+                onHomeAction();
                 return true;
             case R.id.action_edit:
-                int position = _viewPager.getCurrentItem();
-
-                // TODO: disable the button completely?
-                if (_files != null && _files.size() > 0 && position >= 0) {
-                    Intent intent = new Intent(NoteDetailViewActivity.this, NoteEditorActivity.class);
-                    // TODO: pass data somehow
-                    // TODO: currently does not pass the current position correctly - the one passed is the initial one which never gets updated
-                    intent.putStringArrayListExtra(NoteEditorActivity.FILES_INTENT_EXTRA_NAME, _files);
-                    intent.putExtra(NoteEditorActivity.POSITION_INTENT_EXTRA_NAME, position);
-                    startActivity(intent);
-                }
-                else {
-                    // Do not react - nothing to edit.
-                }
+                onEditAction();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void onHomeAction() {
+        // back button in action bar clicked; goto parent activity.
+        finish();
+    }
+
+    private void onEditAction() {
+        int position = _viewPager.getCurrentItem();
+
+        // TODO: disable the button completely?
+        if (_files != null && _files.size() > 0 && position >= 0) {
+            Intent intent = new Intent(NoteDetailViewActivity.this, NoteEditorActivity.class);
+            intent.putStringArrayListExtra(NoteEditorActivity.FILES_INTENT_EXTRA_NAME, _files);
+            intent.putExtra(NoteEditorActivity.POSITION_INTENT_EXTRA_NAME, position);
+            startActivityForResult(intent, EDIT_NOTE_REQUEST_CODE);
+        } else {
+            // Do not react - nothing to edit.
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == EDIT_NOTE_REQUEST_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // TODO: somehow refresh fragment
+            }
+        }
+    }
 }

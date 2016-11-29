@@ -23,8 +23,7 @@ public class NoteDetailViewPageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Create a view to show the note
-        final View noteDetailView = inflater.inflate(R.layout.fragment_note_detail_view, container, false);
+        View noteDetailView = inflater.inflate(R.layout.fragment_note_detail_view, container, false);
 
         // Which note is it?
         Bundle args = getArguments();
@@ -39,29 +38,7 @@ public class NoteDetailViewPageFragment extends Fragment {
         if (note.getIsLoaded()) {
             renderNoteText(note, noteDetailView);
         } else {
-            // TODO: progress bar
-            OnSuccess<String> onSuccess = new OnSuccess<String>() {
-                @Override
-                public void call(String result) {
-                    note.setText(result);
-                    note.setIsLoaded(true);
-
-                    // TODO: can this view be re-used?
-                    // TODO: basically, does it need to verify that the position is still the same?
-                    renderNoteText(note, noteDetailView);
-                }
-            };
-            OnError onError = new OnError() {
-                @Override
-                public void call(Exception e) {
-                    // TODO: error handling
-                }
-            };
-
-            DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
-            if (dropboxStorage != null) {
-                dropboxStorage.getNoteContent(note, onSuccess, onError);
-            }
+            renderNoteTextAsync(note, noteDetailView);
         }
 
         // Return the prepared view
@@ -71,8 +48,6 @@ public class NoteDetailViewPageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        // TODO: check if can re-load note
     }
 
     private void renderNoteTitle(Note note, View noteDetailView) {
@@ -83,6 +58,36 @@ public class NoteDetailViewPageFragment extends Fragment {
                 "text/html",
                 "UTF-8",
                 null);
+    }
+
+    private void renderNoteTextAsync(Note note, View noteDetailView) {
+        // TODO: progress bar
+
+        final Note noteLocal = note;
+        final View noteDetailViewLocal = noteDetailView;
+
+        OnSuccess<String> onSuccess = new OnSuccess<String>() {
+            @Override
+            public void call(String result) {
+                noteLocal.setText(result);
+                noteLocal.setIsLoaded(true);
+
+                // TODO: can this view be re-used?
+                // TODO: basically, does it need to verify that the position is still the same?
+                renderNoteText(noteLocal, noteDetailViewLocal);
+            }
+        };
+        OnError onError = new OnError() {
+            @Override
+            public void call(Exception e) {
+                // TODO: error handling
+            }
+        };
+
+        DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+        if (dropboxStorage != null) {
+            dropboxStorage.getNoteContent(note, onSuccess, onError);
+        }
     }
 
     private void renderNoteText(Note note, View noteDetailView) {
