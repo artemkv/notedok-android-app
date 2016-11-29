@@ -48,6 +48,7 @@ public class NoteDetailViewPageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // TODO: resume correctly
     }
 
     private void renderNoteTitle(Note note, View noteDetailView) {

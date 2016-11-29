@@ -30,16 +30,9 @@ public class NoteDetailViewActivity extends AppCompatActivity {
         _files = intent.getStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME);
         int position = intent.getIntExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, -1);
 
+        // Show note
         if (_files != null && _files.size() > 0 && position >= 0) {
-            // Create the pager view
-            _viewPager = (ViewPager) findViewById(R.id.note_view_pager);
-
-            // Set the view adapter
-            NoteDetailViewPagerAdapter pagerAdapter = new NoteDetailViewPagerAdapter(getSupportFragmentManager(), _files);
-            _viewPager.setAdapter(pagerAdapter);
-
-            // Set the current page
-            _viewPager.setCurrentItem(position);
+            updateNoteView(position);
         } else {
             // TODO: Show message "no notes to show"
         }
@@ -48,7 +41,6 @@ public class NoteDetailViewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         // TODO: resume correctly
     }
 
@@ -98,8 +90,27 @@ public class NoteDetailViewActivity extends AppCompatActivity {
         if (requestCode == EDIT_NOTE_REQUEST_CODE) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                // TODO: somehow refresh fragment
+                String newPath = data.getStringExtra(NoteEditorActivity.NEW_PATH_INTENT_EXTRA_NAME);
+                reloadNote(newPath);
             }
         }
+    }
+
+    private void updateNoteView(int position) {
+        // Create the pager view
+        _viewPager = (ViewPager) findViewById(R.id.note_view_pager);
+
+        // Set the view adapter
+        NoteDetailViewPagerAdapter pagerAdapter = new NoteDetailViewPagerAdapter(getSupportFragmentManager(), _files);
+        _viewPager.setAdapter(pagerAdapter);
+
+        // Set the current page
+        _viewPager.setCurrentItem(position);
+    }
+
+    private void reloadNote(String newPath) {
+        int position = _viewPager.getCurrentItem();
+        _files.set(position, newPath);
+        updateNoteView(position);
     }
 }

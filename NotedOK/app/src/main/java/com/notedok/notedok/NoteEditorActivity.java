@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class NoteEditorActivity extends AppCompatActivity {
     public static final String FILES_INTENT_EXTRA_NAME = "files";
     public static final String POSITION_INTENT_EXTRA_NAME = "pos";
+    public static final String NEW_PATH_INTENT_EXTRA_NAME = "newpath";
 
     private EditText _titleEditor;
     private EditText _textEditor;
@@ -297,6 +298,7 @@ public class NoteEditorActivity extends AppCompatActivity {
 
         // Go back to the previous activity
         Intent intent = new Intent();
+        intent.putExtra(NEW_PATH_INTENT_EXTRA_NAME, _note.getPath());
         setResult(RESULT_OK, intent);
         finish();
     }
