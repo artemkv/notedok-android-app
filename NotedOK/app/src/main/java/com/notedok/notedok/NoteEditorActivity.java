@@ -126,7 +126,7 @@ public class NoteEditorActivity extends AppCompatActivity {
         if (dropboxStorage != null) {
             // TODO: only allow saving note that is fully loaded. Can we disable save icon completely before the note is loaded?
             if (_note.getIsLoaded()) {
-                String newTitle = _titleEditor.getText().toString(); // TODO: 50 char max
+                String newTitle = _titleEditor.getText().toString();
                 String newText = _textEditor.getText().toString();
 
                 _note.setTitle(newTitle);
