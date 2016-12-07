@@ -55,7 +55,7 @@ public class NoteDetailViewPageFragment extends Fragment {
         WebView webView = (WebView) noteDetailView.findViewById(R.id.note_view_text);
 
         webView.loadDataWithBaseURL(null,
-                wrapHtml(webView.getContext(), note.getTitle(), ""),
+                wrapHtml(webView.getContext(), renderNoteTitleHtml(note.getTitle()), ""),
                 "text/html",
                 "UTF-8",
                 null);
@@ -103,7 +103,7 @@ public class NoteDetailViewPageFragment extends Fragment {
         }
 
         webView.loadDataWithBaseURL(null,
-            wrapHtml(webView.getContext(), note.getTitle(), formattedText),
+            wrapHtml(webView.getContext(), renderNoteTitleHtml(note.getTitle()), formattedText),
             "text/html",
             "UTF-8",
             null);
@@ -111,6 +111,13 @@ public class NoteDetailViewPageFragment extends Fragment {
 
     private String wrapHtml(Context context, String titleHtml, String textHtml) {
         return context.getString(R.string.note_web_view_wrapping_html, titleHtml, textHtml);
+    }
+
+    private String renderNoteTitleHtml(String text) {
+        if (text != null && text.length() > 0) {
+            return  text;
+        }
+        return "<span class='placeholder'>" + getString(R.string.note_no_title) + "</span>";
     }
 
     private String renderNoteTextHtml(String text) {

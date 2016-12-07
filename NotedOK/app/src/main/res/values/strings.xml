@@ -7,7 +7,7 @@
     <string name="action_save">Save</string>
     <!-- Search view watermark -->
     <string name="search_hint">Search in titles</string>
-    <!-- Card view -->
+    <!-- Card view/detail view watermarks -->
     <string name="note_no_title">No title</string>
     <!-- Editor watermarks -->
     <string name="note_editor_new_title_hint">New note</string>
@@ -72,6 +72,11 @@
                         white-space: normal;
                         list-style-position: inside;
                         display: inline-block;
+                    }
+
+                    .placeholder
+                    {
+                        color: #a9a9a9;
                     }
                 </style>
             </head>
