@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -20,10 +21,15 @@ public class NoteDetailViewPageFragment extends Fragment {
     public static final String FILES_ARGUMENT_NAME = "files";
     public static final String POSITION_ARGUMENT_NAME = "pos";
 
+    private ProgressBar _loadingIndicator;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View noteDetailView = inflater.inflate(R.layout.fragment_note_detail_view, container, false);
+
+        // Set up the progress bar
+        _loadingIndicator = (ProgressBar) noteDetailView.findViewById(R.id.note_view_loading_indicator);
 
         // Which note is it?
         Bundle args = getArguments();
@@ -62,7 +68,7 @@ public class NoteDetailViewPageFragment extends Fragment {
     }
 
     private void renderNoteTextAsync(Note note, View noteDetailView) {
-        // TODO: progress bar
+        _loadingIndicator.setVisibility(View.VISIBLE);
 
         final Note noteLocal = note;
         final View noteDetailViewLocal = noteDetailView;
@@ -70,6 +76,8 @@ public class NoteDetailViewPageFragment extends Fragment {
         OnSuccess<String> onSuccess = new OnSuccess<String>() {
             @Override
             public void call(String result) {
+                _loadingIndicator.setVisibility(View.GONE);
+
                 noteLocal.setText(result);
                 noteLocal.setIsLoaded(true);
 
