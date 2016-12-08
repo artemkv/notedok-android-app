@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ public class NoteEditorActivity extends AppCompatActivity {
     public static final String POSITION_INTENT_EXTRA_NAME = "pos";
     public static final String NEW_PATH_INTENT_EXTRA_NAME = "newpath";
 
+    private ProgressBar _loadingIndicator;
     private EditText _titleEditor;
     private EditText _textEditor;
 
@@ -39,6 +42,9 @@ public class NoteEditorActivity extends AppCompatActivity {
         _titleEditor = (EditText)findViewById(R.id.note_editor_title);
         _textEditor = (EditText)findViewById(R.id.note_editor_text);
 
+        // Set up the progress bar
+        _loadingIndicator = (ProgressBar) findViewById(R.id.note_editor_loading_indicator);
+
         // Unpack the parameters
         Intent intent = getIntent();
         ArrayList<String> files = intent.getStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME);
@@ -56,11 +62,14 @@ public class NoteEditorActivity extends AppCompatActivity {
             if (_note.getIsLoaded()) {
                 _textEditor.setText(_note.getText());
             } else {
-                // TODO: progress bar
+                _loadingIndicator.setVisibility(View.VISIBLE);
+
                 // TODO: only allow editing note text when it is fully loaded.
                 OnSuccess<String> onSuccess = new OnSuccess<String>() {
                     @Override
                     public void call(String result) {
+                        _loadingIndicator.setVisibility(View.GONE);
+
                         _note.setText(result);
                         _note.setIsLoaded(true);
                         _textEditor.setText(_note.getText());

@@ -1,5 +1,6 @@
 package com.notedok.notedok;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -122,8 +123,14 @@ public class NoteDetailViewPageFragment extends Fragment {
     }
 
     private String renderNoteTitleHtml(String text) {
+        // Avoid timing issues with fragment
+        Activity activity = getActivity();
+        if (!isAdded() || activity == null) {
+            return text;
+        }
+
         if (text != null && text.length() > 0) {
-            return  text;
+            return text;
         }
         return "<span class='placeholder'>" + getString(R.string.note_no_title) + "</span>";
     }

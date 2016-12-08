@@ -45,4 +45,12 @@
         android:hint="@string/note_editor_text_hint"
         android:background="@android:color/transparent"
         android:inputType="textMultiLine|textCapSentences" />
+    <ProgressBar
+        android:id="@+id/note_editor_loading_indicator"
+        style="?android:progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
 </RelativeLayout>
