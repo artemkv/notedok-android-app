@@ -11,6 +11,7 @@
     <string name="note_list_empty_text">No notes found</string>
     <!-- Card view/detail view watermarks -->
     <string name="note_no_title">No title</string>
+    <string name="note_no_text">No text</string>
     <!-- Editor watermarks -->
     <string name="note_editor_new_title_hint">New note</string>
     <string name="note_editor_title_hint">No title</string>

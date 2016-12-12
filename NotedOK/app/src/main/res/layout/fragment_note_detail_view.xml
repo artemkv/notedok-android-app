@@ -19,4 +19,13 @@
         android:layout_gravity="center"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/note_view_empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/colorPlaceHolder"
+        android:text="@string/note_no_text" />
+
 </FrameLayout>

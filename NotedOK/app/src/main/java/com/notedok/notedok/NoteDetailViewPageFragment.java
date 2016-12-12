@@ -23,6 +23,7 @@ public class NoteDetailViewPageFragment extends Fragment {
     public static final String POSITION_ARGUMENT_NAME = "pos";
 
     private ProgressBar _loadingIndicator;
+    private TextView _emptyView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,6 +32,9 @@ public class NoteDetailViewPageFragment extends Fragment {
 
         // Set up the progress bar
         _loadingIndicator = (ProgressBar) noteDetailView.findViewById(R.id.note_view_loading_indicator);
+
+        // Set up the empty view
+        _emptyView = (TextView) noteDetailView.findViewById(R.id.note_view_empty_view);
 
         // Which note is it?
         Bundle args = getArguments();
@@ -104,18 +108,22 @@ public class NoteDetailViewPageFragment extends Fragment {
         WebView webView = (WebView) noteDetailView.findViewById(R.id.note_view_text);
 
         String formattedText;
-        try {
-            formattedText = renderNoteTextHtml(note.getText());
-        } catch (RuntimeException e) {
-            Log.e("NoteWebView", "Could not render note " + note.getPath(), e);
-            formattedText = note.getText();
-        }
+        if (note.getText().length() == 0) {
+            _emptyView.setVisibility(View.VISIBLE);
+        } else {
+            try {
+                formattedText = renderNoteTextHtml(note.getText());
+            } catch (RuntimeException e) {
+                Log.e("NoteWebView", "Could not render note " + note.getPath(), e);
+                formattedText = note.getText();
+            }
 
-        webView.loadDataWithBaseURL(null,
-            wrapHtml(webView.getContext(), renderNoteTitleHtml(note.getTitle()), formattedText),
-            "text/html",
-            "UTF-8",
-            null);
+            webView.loadDataWithBaseURL(null,
+                    wrapHtml(webView.getContext(), renderNoteTitleHtml(note.getTitle()), formattedText),
+                    "text/html",
+                    "UTF-8",
+                    null);
+        }
     }
 
     private String wrapHtml(Context context, String titleHtml, String textHtml) {
