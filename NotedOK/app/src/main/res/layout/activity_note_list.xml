@@ -40,6 +40,14 @@
                 android:layout_gravity="center"
                 />
 
+            <TextView
+                android:id="@+id/notes_view_empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:visibility="gone"
+                android:text="@string/note_list_empty_view_text" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/notes_view"
                 android:layout_width="match_parent"

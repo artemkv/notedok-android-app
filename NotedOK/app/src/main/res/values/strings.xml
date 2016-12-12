@@ -7,6 +7,8 @@
     <string name="action_save">Save</string>
     <!-- Search view watermark -->
     <string name="search_hint">Search in titles</string>
+    <!-- Note list -->
+    <string name="note_list_empty_view_text">No notes found</string>
     <!-- Card view/detail view watermarks -->
     <string name="note_no_title">No title</string>
     <!-- Editor watermarks -->

@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
 import java.util.ArrayList;
 
 public class NoteListViewActivity extends AppCompatActivity implements MasterActivity {
@@ -28,6 +30,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     private ProgressBar _loadingIndicator;
     private boolean _notesLoaded; // Protects from re-loading the notes every time the activity resumes
     private String _searchString;
+    private TextView _emptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +80,9 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
 
         // Set up the progress bar
         _loadingIndicator = (ProgressBar) findViewById(R.id.notes_view_loading_indicator);
+
+        // Set up the empty view
+        _emptyView = (TextView) findViewById(R.id.notes_view_empty_view);
 
         // Handle search intent
         // For example, after the screen is rotated, the activity is re-created and _searchString is null
@@ -164,6 +170,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         if (!_notesLoaded) {
             _notesLoaded = true;
 
+            _emptyView.setVisibility(View.GONE);
             _loadingIndicator.setVisibility(View.VISIBLE);
 
             // onResume is called always, whether it is a new activity (start app/rotate screen) or just a new intent (search).
@@ -201,6 +208,10 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         _swipeRefreshLayout.setRefreshing(false);
         // Don't need loading indicator anymore
         _loadingIndicator.setVisibility(View.GONE);
+        // Show empty view if needed
+        if (filelist.getLength() == 0) {
+            _emptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
