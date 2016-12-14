@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,7 +47,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         MasterActivityProvider.initialize(this);
 
         // Set up recycler view
-        _notesView = (RecyclerView)findViewById(R.id.notes_view);
+        _notesView = (RecyclerView) findViewById(R.id.notes_view);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -54,6 +55,27 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         _notesView.setLayoutManager(layoutManager);
+
+        // Set up the delete on swipe
+        ItemTouchHelper.SimpleCallback deleteOnSwipeTouchCallback =
+            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                @Override
+                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                    // Not implemented since the dragDirs is 0
+                    return false;
+                }
+                @Override
+                public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                    DeletableViewHolder deletable = (viewHolder instanceof DeletableViewHolder ? (DeletableViewHolder) viewHolder : null);
+                    if (deletable != null) {
+                        deletable.onDelete();
+                    } else {
+                        // Non-deletable view, skip
+                    }
+                }
+            };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(deleteOnSwipeTouchCallback);
+        itemTouchHelper.attachToRecyclerView(_notesView);
 
         // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

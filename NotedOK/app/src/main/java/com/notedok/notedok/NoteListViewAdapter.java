@@ -15,7 +15,9 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     /**
      * Implements holder for the note view
      */
-    public static class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class NoteViewHolder
+            extends RecyclerView.ViewHolder
+            implements View.OnClickListener, DeletableViewHolder {
         private CardView _cardView;
         private FileList _fileList;
         private int _position;
@@ -43,9 +45,24 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             showDetails();
         }
 
+        @Override
+        public void onDelete() {
+            delete();
+        }
+
         private void showDetails() {
             MasterActivity masterActivity = MasterActivityProvider.getMasterActivity();
             masterActivity.switchToDetailActivity(_fileList, _position);
+        }
+
+        private void delete() {
+            // TODO:
+            // _fileList.remove(getAdapterPosition());
+
+            // adapt _visibleNotesTotal
+
+            //notifyItemRemoved(getAdapterPosition());
+            //notifyItemRangeChanged(getAdapterPosition(),mDataSet.size());
         }
     }
 

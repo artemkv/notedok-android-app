@@ -49,4 +49,15 @@ public class FileList {
     public ArrayList<String> getAsArrayList() {
         return _files;
     }
+
+    /**
+     * Removes the item at the specified position from the list.
+     * @param position The position of the file path
+     */
+    public void remove(int position) {
+        if (position < 0 || position >= _files.size()) {
+            throw new IllegalArgumentException("index value is outside of list boundaries");
+        }
+        _files.remove(position);
+    }
 }
