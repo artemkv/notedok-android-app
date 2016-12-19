@@ -186,13 +186,12 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     protected void onResume() {
         super.onResume();
 
-        // TODO: resume correctly
-
-        // Avoid reloading all data every time user switches from and to the app.
+        // Avoid reloading all data every time user switches from and to the app or rotates the device.
         if (!_notesLoaded) {
             _notesLoaded = true;
 
-            _emptyView.setVisibility(View.GONE);
+            // Normally before refresh we need loading indicator.
+            // Except the case when user refreshes on swipe, in which case there is another loading indicator.
             _loadingIndicator.setVisibility(View.VISIBLE);
 
             // onResume is called always, whether it is a new activity (start app/rotate screen) or just a new intent (search).
@@ -202,6 +201,8 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     }
 
     private void refresh() {
+        _emptyView.setVisibility(View.GONE);
+
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
         if (dropboxStorage != null) {
             OnSuccess<ArrayList<String>> onSuccess = new OnSuccess<ArrayList<String>>() {
@@ -242,6 +243,16 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         intent.putStringArrayListExtra(MasterActivity.FILES_INTENT_EXTRA_NAME, fileList.getAsArrayList());
         intent.putExtra(MasterActivity.POSITION_INTENT_EXTRA_NAME, position);
         startActivityForResult(intent, SHOW_NOTE_DETAILS_REQUEST_CODE);
+    }
+
+    @Override
+    public void deleteItem(int position) {
+        NoteListViewAdapter noteListViewAdapter = (NoteListViewAdapter) _notesView.getAdapter();
+        noteListViewAdapter.onDelete(position);
+
+        if (noteListViewAdapter.getItemCount() == 0) {
+            _emptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     /*

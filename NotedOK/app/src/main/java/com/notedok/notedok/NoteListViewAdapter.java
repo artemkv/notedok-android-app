@@ -58,7 +58,8 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void delete() {
-            _adapter.onDelete(getAdapterPosition());
+            MasterActivity masterActivity = MasterActivityProvider.getMasterActivity();
+            masterActivity.deleteItem(_position);
         }
     }
 
@@ -173,8 +174,6 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, getItemCount());
-
-        // TODO: if the last note deleted, show message "no notes"
     }
 
     private void bindViewHolder(NoteViewHolder viewHolder, int position) {

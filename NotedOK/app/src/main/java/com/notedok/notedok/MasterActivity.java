@@ -13,4 +13,10 @@ public interface MasterActivity {
      * @param position The position of the visible note in the master view.
      */
     void switchToDetailActivity(FileList fileList, int position);
+
+    /**
+     * Orchestrates the item deletion at the specified position.
+     * @param position The item to delete
+     */
+    void deleteItem(int position);
 }
