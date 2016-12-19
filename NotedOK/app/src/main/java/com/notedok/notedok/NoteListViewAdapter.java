@@ -162,17 +162,32 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     * Handles the note deletion
+     * Deletes the note from the list
      * @param position Position of the deleted note in the list
+     * @return The path of the deleted note
      */
-    public void onDelete(int position) {
-        // TODO: do actual delete
-        // TODO: prepare undo
+    public String deleteNote(int position) {
+        String deletedNotePath = _fileList.getPath(position);
 
         _fileList.remove(position);
         _visibleNotesTotal--;
 
         notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+
+        return deletedNotePath;
+    }
+
+    /**
+     * Restores note in the list
+     * @param position
+     * @param path the path of the note to restore
+     */
+    public void restoreNote(int position, String path) {
+        _fileList.insert(position, path);
+        _visibleNotesTotal++;
+
+        notifyItemInserted(position);
         notifyItemRangeChanged(position, getItemCount());
     }
 

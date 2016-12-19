@@ -247,10 +247,11 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
 
     @Override
     public void deleteItem(int position) {
-        NoteListViewAdapter noteListViewAdapter = (NoteListViewAdapter) _notesView.getAdapter();
+        final int positionLocal = position;
+        final NoteListViewAdapter noteListViewAdapter = (NoteListViewAdapter) _notesView.getAdapter();
 
         // Delete from the UI
-        noteListViewAdapter.onDelete(position);
+        final String deletedNotePath = noteListViewAdapter.deleteNote(position);
 
         // TODO: Delete from the Dropbox
 
@@ -261,6 +262,8 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
             .setAction("UNDO", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    noteListViewAdapter.restoreNote(positionLocal, deletedNotePath);
+                    _emptyView.setVisibility(View.GONE);
                 }
             });
         snackbar.show();

@@ -60,4 +60,15 @@ public class FileList {
         }
         _files.remove(position);
     }
+
+    /**
+     * Inserts the path at the specified position.
+     * @param position The position of the file path to add.
+     */
+    public void insert(int position, String path) {
+        if (position < 0 || position > _files.size()) {
+            throw new IllegalArgumentException("index value is invalid");
+        }
+        _files.add(position, path);
+    }
 }
