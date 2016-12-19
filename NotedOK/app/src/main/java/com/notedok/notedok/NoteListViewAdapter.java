@@ -18,6 +18,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public static class NoteViewHolder
             extends RecyclerView.ViewHolder
             implements View.OnClickListener, DeletableViewHolder {
+        private NoteListViewAdapter _adapter;
         private CardView _cardView;
         private FileList _fileList;
         private int _position;
@@ -27,7 +28,8 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             _cardView = (CardView)view.findViewById(R.id.note_view);
         }
 
-        public void bindToNote(Note note, FileList fileList, int position) {
+        public void bindToNote(NoteListViewAdapter adapter, Note note, FileList fileList, int position) {
+            _adapter = adapter;
             _fileList = fileList;
             _position = position;
 
@@ -56,13 +58,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void delete() {
-            // TODO:
-            // _fileList.remove(getAdapterPosition());
-
-            // adapt _visibleNotesTotal
-
-            //notifyItemRemoved(getAdapterPosition());
-            //notifyItemRangeChanged(getAdapterPosition(),mDataSet.size());
+            _adapter.onDelete(getAdapterPosition());
         }
     }
 
@@ -164,12 +160,30 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return _visibleNotesTotal + (showProgressIndicator ? 1 : 0);
     }
 
+    /**
+     * Handles the note deletion
+     * @param position Position of the deleted note in the list
+     */
+    public void onDelete(int position) {
+        // TODO: do actual delete
+        // TODO: prepare undo
+
+        _fileList.remove(position);
+        _visibleNotesTotal--;
+
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+
+        // TODO: if the last note deleted, show message "no notes"
+    }
+
     private void bindViewHolder(NoteViewHolder viewHolder, int position) {
         final NoteViewHolder viewHolderLocal = viewHolder;
         final int positionLocal = position;
+        final NoteListViewAdapter _self = this;
 
         final Note note = NoteCache.getInstance().getNote(_fileList.getPath(positionLocal));
-        viewHolderLocal.bindToNote(note, _fileList, positionLocal);
+        viewHolderLocal.bindToNote(_self, note, _fileList, positionLocal);
 
         if (!note.getIsLoaded()) {
             OnSuccess<String> onSuccess = new OnSuccess<String>() {
@@ -177,7 +191,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 public void call(String result) {
                     note.setText(result);
                     note.setIsLoaded(true);
-                    viewHolderLocal.bindToNote(note, _fileList, positionLocal);
+                    viewHolderLocal.bindToNote(_self, note, _fileList, positionLocal);
 
                     // Now this view has been fully loaded, allow re-using it
                     viewHolderLocal.itemView.setHasTransientState(false);
