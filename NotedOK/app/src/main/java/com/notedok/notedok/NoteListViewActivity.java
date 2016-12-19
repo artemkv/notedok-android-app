@@ -248,8 +248,24 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     @Override
     public void deleteItem(int position) {
         NoteListViewAdapter noteListViewAdapter = (NoteListViewAdapter) _notesView.getAdapter();
+
+        // Delete from the UI
         noteListViewAdapter.onDelete(position);
 
+        // TODO: Delete from the Dropbox
+
+        // Setup undo
+        // TODO: strings to resources
+        Snackbar snackbar = Snackbar
+            .make(_notesView, "Note deleted", Snackbar.LENGTH_LONG)
+            .setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
+        snackbar.show();
+
+        // If no more notes left, show empty view
         if (noteListViewAdapter.getItemCount() == 0) {
             _emptyView.setVisibility(View.VISIBLE);
         }
