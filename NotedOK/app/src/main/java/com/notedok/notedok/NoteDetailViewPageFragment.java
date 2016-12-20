@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -65,8 +64,9 @@ public class NoteDetailViewPageFragment extends Fragment {
     private void renderNoteTitle(Note note, View noteDetailView) {
         WebView webView = (WebView) noteDetailView.findViewById(R.id.note_view_text);
 
+        String safeTitle = htmlEscape(note.getTitle());
         webView.loadDataWithBaseURL(null,
-                wrapHtml(webView.getContext(), renderNoteTitleHtml(note.getTitle()), ""),
+                wrapHtml(webView.getContext(), renderNoteTitleHtml(safeTitle), ""),
                 "text/html",
                 "UTF-8",
                 null);
@@ -111,15 +111,18 @@ public class NoteDetailViewPageFragment extends Fragment {
         if (note.getText().length() == 0) {
             _emptyView.setVisibility(View.VISIBLE);
         } else {
+            String safeText = htmlEscape(note.getText());
+
             try {
-                formattedText = renderNoteTextHtml(note.getText());
+                formattedText = renderNoteTextHtml(safeText);
             } catch (RuntimeException e) {
                 Log.e("NoteWebView", "Could not render note " + note.getPath(), e);
-                formattedText = note.getText();
+                formattedText = safeText; // Fallback to non-formatted text
             }
 
+            String safeTitle = htmlEscape(note.getTitle());
             webView.loadDataWithBaseURL(null,
-                    wrapHtml(webView.getContext(), renderNoteTitleHtml(note.getTitle()), formattedText),
+                    wrapHtml(webView.getContext(), renderNoteTitleHtml(safeTitle), formattedText),
                     "text/html",
                     "UTF-8",
                     null);
@@ -155,5 +158,16 @@ public class NoteDetailViewPageFragment extends Fragment {
 
         WikiToHtmlFormatter formatter = new WikiToHtmlFormatter();
         return formatter.format(text);
+    }
+
+    private String htmlEscape(String unsafeText) {
+        String safeText = unsafeText
+            .replaceAll("&", "&amp;")
+            .replaceAll("\"", "&quot;")
+            .replaceAll("'", "&#39;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;");
+
+        return  safeText;
     }
 }
