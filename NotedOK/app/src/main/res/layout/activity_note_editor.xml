@@ -42,8 +42,10 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:textSize="@dimen/note_text_text_size"
+        android:lineSpacingMultiplier="1.5"
         android:hint="@string/note_editor_text_hint"
         android:background="@android:color/transparent"
+        android:scrollbars="vertical"
         android:inputType="textMultiLine|textCapSentences" />
     <ProgressBar
         android:id="@+id/note_editor_loading_indicator"
