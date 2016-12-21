@@ -59,12 +59,12 @@
                 android:inputType="textMultiLine|textCapSentences" />
         </RelativeLayout>
     </ScrollView>
+
     <ProgressBar
         android:id="@+id/note_editor_loading_indicator"
         style="?android:progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_gravity="center"
         android:visibility="gone"/>
 </FrameLayout>
