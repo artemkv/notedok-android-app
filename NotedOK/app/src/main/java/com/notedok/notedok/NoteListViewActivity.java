@@ -253,25 +253,77 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         // Delete from the UI
         final String deletedNotePath = noteListViewAdapter.deleteNote(position);
 
-        // TODO: Delete from the Dropbox
-
-        // Setup undo
-        // TODO: strings to resources
-        Snackbar snackbar = Snackbar
-            .make(_notesView, "Note deleted", Snackbar.LENGTH_LONG)
-            .setAction("UNDO", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    noteListViewAdapter.restoreNote(positionLocal, deletedNotePath);
-                    _emptyView.setVisibility(View.GONE);
-                }
-            });
-        snackbar.show();
-
         // If no more notes left, show empty view
         if (noteListViewAdapter.getItemCount() == 0) {
             _emptyView.setVisibility(View.VISIBLE);
         }
+
+        // Delete from the Dropbox
+        Note noteToDelete = NoteCache.getInstance().getNote(deletedNotePath);
+        DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+        if (dropboxStorage != null) {
+            OnSuccess<String> onSuccess = new OnSuccess<String>() {
+                @Override
+                public void call(String result) {
+                    setupUndo(positionLocal, deletedNotePath);
+                }
+            };
+            OnError onError = new OnError() {
+                @Override
+                public void call(Exception e) {
+                    // TODO: error handling
+                }
+            };
+            dropboxStorage.deleteNote(noteToDelete, onSuccess, onError);
+        }
+    }
+
+    // TODO: this is a bit scary, since the undo data comes from NoteCache. It's OK unless the cache gets cleaned
+    public void restoreItem(int position, String deletedNotePath) {
+        final int positionLocal = position;
+        final String deletedNotePathLocal = deletedNotePath;
+        final NoteListViewAdapter noteListViewAdapter = (NoteListViewAdapter) _notesView.getAdapter();
+
+        // Restore in UI
+        noteListViewAdapter.restoreNote(positionLocal, deletedNotePathLocal);
+
+        // View cannot be empty anymore
+        _emptyView.setVisibility(View.GONE);
+
+        // Restore in Dropbox
+        Note noteToRestore = NoteCache.getInstance().getNote(deletedNotePath);
+        DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
+        if (dropboxStorage != null) {
+            OnSuccess<String> onSuccess = new OnSuccess<String>() {
+                @Override
+                public void call(String result) {
+                    // Nothing to do here
+                }
+            };
+            OnError onError = new OnError() {
+                @Override
+                public void call(Exception e) {
+                    // TODO: error handling
+                }
+            };
+            dropboxStorage.saveNote(noteToRestore, false, onSuccess, onError);
+        }
+    }
+
+    private void setupUndo(int position, String deletedNotePath) {
+        final int positionLocal = position;
+        final String deletedNotePathLocal = deletedNotePath;
+
+        // TODO: strings to resources
+        Snackbar snackbar = Snackbar
+                .make(_notesView, "Note deleted", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        restoreItem(positionLocal, deletedNotePathLocal);
+                    }
+                });
+        snackbar.show();
     }
 
     /*

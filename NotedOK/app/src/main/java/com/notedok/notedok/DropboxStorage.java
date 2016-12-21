@@ -110,6 +110,15 @@ public class DropboxStorage {
         new AsyncWorkerTask<ArrayList<String>>(worker, onSuccess, onError).execute();
     }
 
+    /**
+     * Retrieves the note text as a string.
+     * The note is supposed to have Path property set to file path in format "/my file.txt" (exactly as retrieved by retrieveFileList).
+     * Dropbox API returns the file content as is, in the form of binary stream.
+     * The method is supposed to convert whatever encoding was used in the file to UTF-16 string.
+     * @param note Note to retrieve the content for
+     * @param onSuccess The callback that is to be called on success.
+     * @param onError The callback that is to be called on error.
+     */
     public void getNoteContent(Note note, OnSuccess<String> onSuccess, OnError onError) {
         final Note noteLocal = note;
 
@@ -182,10 +191,10 @@ public class DropboxStorage {
      *
      * Empty path is not allowed. If the note title is empty, the caller is supposed to ensure the path is non-empty, by applying the timestamp to the file path, i.e. "/~~1426963430173.txt"
      * When note is saved successfully, this method returns the actual path the note is saved to.
-     * @param note
-     * @param overwrite
-     * @param onSuccess
-     * @param onError
+     * @param note Note to save
+     * @param overwrite When the note at the specified path already exists, whether it should be overwritten or saved with the new name.
+     * @param onSuccess The callback that is to be called on success.
+     * @param onError The callback that is to be called on error.
      */
     public void saveNote(Note note, boolean overwrite, OnSuccess<String> onSuccess, OnError onError) {
         final Note noteLocal = note;
@@ -211,6 +220,31 @@ public class DropboxStorage {
 
                     return "/" + fileMetadata.getName();
                 } catch (DbxException | IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        new AsyncWorkerTask<String>(worker, onSuccess, onError).execute();
+    }
+
+    /**
+     * Deletes the note.
+     * The note is supposed to have Path property set to file path in format "/my file.txt" (exactly as retrieved by retrieveFileList).
+     * @param note note to delete
+     * @param onSuccess The callback that is to be called on success.
+     * @param onError The callback that is to be called on error.
+     */
+    public void deleteNote(Note note, OnSuccess<String> onSuccess, OnError onError) {
+        final Note noteLocal = note;
+
+        AsyncWorkerTask.Worker<String> worker = new AsyncWorkerTask.Worker<String>() {
+            @Override
+            public String getResult() {
+                try {
+                    _dropboxClient.files().delete(noteLocal.getPath());
+                    return "";
+                } catch (DbxException e) {
                     throw new RuntimeException(e);
                 }
             }
