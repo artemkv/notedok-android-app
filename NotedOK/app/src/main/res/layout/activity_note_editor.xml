@@ -52,11 +52,12 @@
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:textSize="@dimen/note_text_text_size"
-                android:lineSpacingMultiplier="1.5"
                 android:hint="@string/note_editor_text_hint"
                 android:background="@android:color/transparent"
                 android:scrollbars="none"
                 android:inputType="textMultiLine|textCapSentences" />
+                <!-- Removed due to the bug (http://stackoverflow.com/questions/27421809/edittext-linespacingextra-strange-behavior) -->
+                <!--android:lineSpacingMultiplier="1.5"-->
         </RelativeLayout>
     </ScrollView>
 
