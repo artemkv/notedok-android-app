@@ -1,52 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:padding="0dp"
     tools:context="com.notedok.notedok.NoteEditorActivity">
-    <EditText
-        android:id="@+id/note_editor_title"
-        android:maxLength="50"
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:fontFamily="roboto-medium"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:textSize="@dimen/note_title_text_size"
-        android:hint="@string/note_editor_title_hint"
-        android:background="@android:color/transparent"
-        android:inputType="textMultiLine|textCapSentences" />
-    <View
-        android:id="@+id/note_editor_text_separator"
-        android:layout_below="@+id/note_editor_title"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorSeparator" />
-    <EditText
-        android:id="@+id/note_editor_text"
-        android:layout_below="@+id/note_editor_text_separator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="roboto-regular"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:textSize="@dimen/note_text_text_size"
-        android:lineSpacingMultiplier="1.5"
-        android:hint="@string/note_editor_text_hint"
-        android:background="@android:color/transparent"
-        android:scrollbars="vertical"
-        android:inputType="textMultiLine|textCapSentences" />
+        android:layout_height="match_parent"
+        android:padding="0dp"
+        android:scrollbars="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
+            <EditText
+                android:id="@+id/note_editor_title"
+                android:maxLength="50"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:fontFamily="roboto-medium"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textSize="@dimen/note_title_text_size"
+                android:hint="@string/note_editor_title_hint"
+                android:background="@android:color/transparent"
+                android:inputType="textMultiLine|textCapSentences" />
+            <View
+                android:id="@+id/note_editor_text_separator"
+                android:layout_below="@+id/note_editor_title"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorSeparator" />
+            <EditText
+                android:id="@+id/note_editor_text"
+                android:layout_below="@+id/note_editor_text_separator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="roboto-regular"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textSize="@dimen/note_text_text_size"
+                android:lineSpacingMultiplier="1.5"
+                android:hint="@string/note_editor_text_hint"
+                android:background="@android:color/transparent"
+                android:scrollbars="none"
+                android:inputType="textMultiLine|textCapSentences" />
+        </RelativeLayout>
+    </ScrollView>
     <ProgressBar
         android:id="@+id/note_editor_loading_indicator"
         style="?android:progressBarStyle"
@@ -55,4 +67,4 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:visibility="gone"/>
-</RelativeLayout>
+</FrameLayout>
