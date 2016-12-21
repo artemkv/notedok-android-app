@@ -19,7 +19,7 @@ public class NoteEditorActivity extends AppCompatActivity {
     public static final String POSITION_INTENT_EXTRA_NAME = "pos";
     public static final String NEW_PATH_INTENT_EXTRA_NAME = "newpath";
 
-    private ProgressBar _loadingIndicator;
+    private ProgressBar _loadingSavingIndicator;
     private EditText _titleEditor;
     private EditText _textEditor;
 
@@ -43,7 +43,7 @@ public class NoteEditorActivity extends AppCompatActivity {
         _textEditor = (EditText)findViewById(R.id.note_editor_text);
 
         // Set up the progress bar
-        _loadingIndicator = (ProgressBar) findViewById(R.id.note_editor_loading_indicator);
+        _loadingSavingIndicator = (ProgressBar) findViewById(R.id.note_editor_loading_indicator);
 
         // Unpack the parameters
         Intent intent = getIntent();
@@ -62,13 +62,13 @@ public class NoteEditorActivity extends AppCompatActivity {
             if (_note.getIsLoaded()) {
                 _textEditor.setText(_note.getText());
             } else {
-                _loadingIndicator.setVisibility(View.VISIBLE);
+                _loadingSavingIndicator.setVisibility(View.VISIBLE);
 
                 // TODO: only allow editing note text when it is fully loaded.
                 OnSuccess<String> onSuccess = new OnSuccess<String>() {
                     @Override
                     public void call(String result) {
-                        _loadingIndicator.setVisibility(View.GONE);
+                        _loadingSavingIndicator.setVisibility(View.GONE);
 
                         _note.setText(result);
                         _note.setIsLoaded(true);
@@ -131,6 +131,8 @@ public class NoteEditorActivity extends AppCompatActivity {
      * Saves the complete note, new or existing.
      */
     private void saveNote() {
+        _loadingSavingIndicator.setVisibility(View.VISIBLE);
+
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
         if (dropboxStorage != null) {
             // TODO: only allow saving note that is fully loaded. Can we disable save icon completely before the note is loaded?
@@ -298,11 +300,12 @@ public class NoteEditorActivity extends AppCompatActivity {
      * !Make sure to not have any async actions pending.
      */
     private void finishEditing() {
-        // TODO: this is hardcoded piece. Should be replaced with something decent.
+        _loadingSavingIndicator.setVisibility(View.GONE);
+
+        // Give feedback
         Context context = getApplicationContext();
-        CharSequence text = "Saved";
         int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
+        Toast toast = Toast.makeText(context, getText(R.string.note_editor_saved), duration);
         toast.show();
 
         // Go back to the previous activity
