@@ -2,6 +2,8 @@ package com.notedok.notedok;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +39,10 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             TitleTextView.setText(note.getTitle());
 
             TextView TextTextView = (TextView)_cardView.findViewById(R.id.note_text);
-            TextTextView.setText(note.getText());
+            String noteTextSafe = Rendering.htmlEscape(note.getText());
+            String noteTextFormatted = Rendering.renderNoteTextHtml(noteTextSafe);
+            Spanned noteTextSpanned = getTextSpanned(noteTextFormatted);
+            TextTextView.setText(noteTextSpanned);
 
             _cardView.setOnClickListener(this);
         }
@@ -50,6 +55,17 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         @Override
         public void onDelete() {
             delete();
+        }
+
+        @SuppressWarnings("deprecation")
+        private Spanned getTextSpanned(String text) {
+            Spanned noteTextSpanned;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                noteTextSpanned = Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY);
+            } else {
+                noteTextSpanned = Html.fromHtml(text);
+            }
+            return noteTextSpanned;
         }
 
         private void showDetails() {

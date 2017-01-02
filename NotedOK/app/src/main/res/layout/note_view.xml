@@ -41,7 +41,8 @@
             android:padding="16dp"
             android:textSize="@dimen/note_text_text_size"
             android:fontFamily="roboto-regular"
-            android:textColor="@color/colorText"/>
+            android:textColor="@color/colorText"
+            android:textColorLink="@color/colorPrimary" />
 
         <!-- TODO: decide what to do with this -->
         <!--Button

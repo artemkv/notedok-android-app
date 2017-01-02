@@ -64,7 +64,7 @@ public class NoteDetailViewPageFragment extends Fragment {
     private void renderNoteTitle(Note note, View noteDetailView) {
         WebView webView = (WebView) noteDetailView.findViewById(R.id.note_view_text);
 
-        String safeTitle = htmlEscape(note.getTitle());
+        String safeTitle = Rendering.htmlEscape(note.getTitle());
         webView.loadDataWithBaseURL(null,
                 wrapHtml(webView.getContext(), renderNoteTitleHtml(safeTitle), ""),
                 "text/html",
@@ -111,16 +111,16 @@ public class NoteDetailViewPageFragment extends Fragment {
         if (note.getText().length() == 0) {
             _emptyView.setVisibility(View.VISIBLE);
         } else {
-            String safeText = htmlEscape(note.getText());
+            String safeText = Rendering.htmlEscape(note.getText());
 
             try {
-                formattedText = renderNoteTextHtml(safeText);
+                formattedText = Rendering.renderNoteTextHtml(safeText);
             } catch (RuntimeException e) {
                 Log.e("NoteWebView", "Could not render note " + note.getPath(), e);
                 formattedText = safeText; // Fallback to non-formatted text
             }
 
-            String safeTitle = htmlEscape(note.getTitle());
+            String safeTitle = Rendering.htmlEscape(note.getTitle());
             webView.loadDataWithBaseURL(null,
                     wrapHtml(webView.getContext(), renderNoteTitleHtml(safeTitle), formattedText),
                     "text/html",
@@ -144,30 +144,5 @@ public class NoteDetailViewPageFragment extends Fragment {
             return text;
         }
         return "<span class='placeholder'>" + getString(R.string.note_no_title) + "</span>";
-    }
-
-    private String renderNoteTextHtml(String text) {
-        // replace '[http' with '[rmhttp'
-        text = text.replaceAll("(\\[http)", "[rmhttp");
-
-        // put link in square brackets
-        text = text.replaceAll("(\\bhttps?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])", "[$1]");
-
-        // replace '[rmhttp' with '[http'
-        text = text.replaceAll("(\\[rmhttp)", "[http");
-
-        WikiToHtmlFormatter formatter = new WikiToHtmlFormatter();
-        return formatter.format(text);
-    }
-
-    private String htmlEscape(String unsafeText) {
-        String safeText = unsafeText
-            .replaceAll("&", "&amp;")
-            .replaceAll("\"", "&quot;")
-            .replaceAll("'", "&#39;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;");
-
-        return  safeText;
     }
 }
