@@ -62,6 +62,7 @@ public class NoteEditorActivity extends AppCompatActivity {
             if (_note.getIsLoaded()) {
                 _textEditor.setText(_note.getText());
             } else {
+                disableEditing();
                 _loadingSavingIndicator.setVisibility(View.VISIBLE);
 
                 // TODO: only allow editing note text when it is fully loaded.
@@ -69,6 +70,7 @@ public class NoteEditorActivity extends AppCompatActivity {
                     @Override
                     public void call(String result) {
                         _loadingSavingIndicator.setVisibility(View.GONE);
+                        enableEditing();
 
                         _note.setText(result);
                         _note.setIsLoaded(true);
@@ -127,10 +129,21 @@ public class NoteEditorActivity extends AppCompatActivity {
         }
     }
 
+    public void enableEditing() {
+        _titleEditor.setEnabled(true);
+        _textEditor.setEnabled(true);
+    }
+
+    public void disableEditing() {
+        _titleEditor.setEnabled(false);
+        _textEditor.setEnabled(false);
+    }
+
     /**
      * Saves the complete note, new or existing.
      */
     private void saveNote() {
+        disableEditing();
         _loadingSavingIndicator.setVisibility(View.VISIBLE);
 
         DropboxStorage dropboxStorage = DropboxStorageProvider.getDropboxStorage();
