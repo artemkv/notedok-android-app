@@ -32,6 +32,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     private boolean _notesLoaded; // Protects from re-loading the notes every time the activity resumes
     private String _searchString;
     private TextView _emptyView;
+    private FloatingActionButton _addNewNoteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +83,8 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         setSupportActionBar(toolbar);
 
         // Set up buttons
-        FloatingActionButton addNewNoteButton = (FloatingActionButton) findViewById(R.id.add_new_note);
-        addNewNoteButton.setOnClickListener(new View.OnClickListener() {
+        _addNewNoteButton = (FloatingActionButton) findViewById(R.id.add_new_note);
+        _addNewNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onAddNewNoteButtonClick();
@@ -185,6 +186,14 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
     @Override
     protected void onResume() {
         super.onResume();
+
+        // If search is active, do not allow adding notes
+        if (_searchString == null) {
+            _addNewNoteButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            _addNewNoteButton.setVisibility(View.GONE);
+        }
 
         // Avoid reloading all data every time user switches from and to the app or rotates the device.
         if (!_notesLoaded) {
