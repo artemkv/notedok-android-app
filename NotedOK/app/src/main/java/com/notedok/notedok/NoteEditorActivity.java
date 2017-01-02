@@ -165,7 +165,7 @@ public class NoteEditorActivity extends AppCompatActivity {
                     saveExistingNote();
                 }
             } else {
-                // TODO: do something about it
+                // Ignore, the note is not loaded yet
             }
         } else {
             // TODO: do something about it
