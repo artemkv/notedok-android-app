@@ -40,7 +40,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             TextView TextTextView = (TextView)_cardView.findViewById(R.id.note_text);
             String noteTextSafe = Rendering.htmlEscape(note.getText());
-            String noteTextFormatted = Rendering.renderNoteTextHtml(noteTextSafe);
+            String noteTextFormatted = Rendering.renderNoteTextHtmlReduced(noteTextSafe);
             Spanned noteTextSpanned = getTextSpanned(noteTextFormatted);
             TextTextView.setText(noteTextSpanned);
 

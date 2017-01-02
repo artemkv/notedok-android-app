@@ -21,6 +21,26 @@ public final class Rendering {
     }
 
     /**
+     * Renders the reduced html from the note text.
+     * @param text Note text.
+     * @return Note Html
+     */
+    // TODO: code duplication
+    public static String renderNoteTextHtmlReduced(String text) {
+        // replace '[http' with '[rmhttp'
+        text = text.replaceAll("(\\[http)", "[rmhttp");
+
+        // put link in square brackets
+        text = text.replaceAll("(\\bhttps?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])", "[$1]");
+
+        // replace '[rmhttp' with '[http'
+        text = text.replaceAll("(\\[rmhttp)", "[http");
+
+        WikiToHtmlFormatter formatter = new WikiToHtmlFormatter();
+        return formatter.formatReduced(text);
+    }
+
+    /**
      * Escapes the HTML unsafe tags. This method does not guarantee safety!
      * This method only makes sure that the basic tags are converted before formatting.
      * If any unsafe tags are left in the end, they should be sanitized by the UI.

@@ -57,6 +57,54 @@ public class WikiToHtmlFormatter {
         return _text;
     }
 
+    // TODO: UT
+    public String formatReduced(String wiki) {
+        // Normalize line ends
+        String[] strings = wiki.split("\\r\\n|\\n|\\r", -1);
+        StringBuilder sb = new StringBuilder(wiki.length());
+        if (strings.length > 0) {
+            for (int i = 0; i < strings.length; i++) {
+                sb.append(strings[i]);
+                sb.append("\n");
+            }
+            _text = sb.toString();
+        } else {
+            _text = "\n";
+        }
+
+        // Length has to be re-calculated every time, because it can change
+        for (_pos = 0; _pos < _text.length(); _pos++) {
+            _char = getCharAt(_text, _pos);
+
+            if (_char.equals("*")) {
+                tryWrap("*", "<b>", "</b>");
+            } else if (_char.equals("_")) {
+                tryWrap("_", "<i>", "</i>");
+            } else if (_char.equals("-")) {
+                tryWrap("--", "<del>", "</del>");
+            } else if (_char.equals("+")) {
+                tryWrap("++", "<u>", "</u>");
+            } else if (_char.equals("^")) {
+                tryWrap("^", "<sup>", "</sup>");
+            } else if (_char.equals("~")) {
+                tryWrap("~", "<sub>", "</sub>");
+            } else if (_char.equals("{")) {
+                tryEscaped();
+            } else if (_char.equals("[")) {
+                tryAnchor();
+            } else if (_char.equals("!")) {
+                tryHeader("!");
+            } else if (_char.equals("h")) {
+                tryNumberedHeader();
+            }
+        }
+
+        // Break on new line
+        _text = _text.replace("\n", "<br>");
+
+        return _text;
+    }
+
     private void tryWrap(String formattingString, String openingTag, String closingTag) {
         // Start of the formatting
         if (js_substr(_text, _pos, formattingString.length()).equals(formattingString)) {
