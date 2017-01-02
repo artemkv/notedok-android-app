@@ -80,7 +80,7 @@ public class NoteEditorActivity extends AppCompatActivity {
                 OnError onError = new OnError() {
                     @Override
                     public void call(Exception e) {
-                        // TODO: error handling
+                        Rendering.showDropboxError();
                     }
                 };
 
@@ -217,7 +217,7 @@ public class NoteEditorActivity extends AppCompatActivity {
         OnError onError = new OnError() {
             @Override
             public void call(Exception e) {
-                // TODO: error handling
+                Rendering.showDropboxError();
             }
         };
 
@@ -238,7 +238,7 @@ public class NoteEditorActivity extends AppCompatActivity {
         OnError onError = new OnError() {
             @Override
             public void call(Exception e) {
-                // TODO: error handling
+                Rendering.showDropboxError();
             }
         };
 
@@ -256,7 +256,7 @@ public class NoteEditorActivity extends AppCompatActivity {
         OnError onError = new OnError() {
             @Override
             public void call(Exception e) {
-                // TODO: error handling
+                Rendering.showDropboxError();
             }
         };
 
@@ -295,7 +295,7 @@ public class NoteEditorActivity extends AppCompatActivity {
             OnError onError = new OnError() {
                 @Override
                 public void call(Exception e) {
-                    // TODO: error handling
+                    Rendering.showDropboxError();
                 }
             };
 

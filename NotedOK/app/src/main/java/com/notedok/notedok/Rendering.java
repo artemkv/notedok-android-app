@@ -1,5 +1,8 @@
 package com.notedok.notedok;
 
+import android.content.Context;
+import android.widget.Toast;
+
 public final class Rendering {
     /**
      * Renders the html from the note text.
@@ -56,5 +59,15 @@ public final class Rendering {
                 .replaceAll(">", "&gt;");
 
         return  safeText;
+    }
+
+    /**
+     * Shows the dropbox connection error message.
+     */
+    public static void showDropboxError() {
+        int duration = Toast.LENGTH_SHORT;
+        Context context = MyApplication.getAppContext();
+        Toast toast = Toast.makeText(context, context.getText(R.string.dropbox_error), duration);
+        toast.show();
     }
 }

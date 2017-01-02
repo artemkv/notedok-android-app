@@ -21,6 +21,8 @@
     <string name="note_editor_existing_note_activity_title">Edit note</string>
     <!-- Editor messages -->
     <string name="note_editor_saved">Note saved</string>
+    <!-- Dropbox connection messages -->
+    <string name="dropbox_error">Could not connect to Dropbox. Try again later</string>
     <!-- Do not translate -->
     <string name="note_web_view_wrapping_html" translatable="false">
         <![CDATA[

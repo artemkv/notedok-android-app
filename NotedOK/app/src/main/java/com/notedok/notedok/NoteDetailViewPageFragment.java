@@ -94,7 +94,7 @@ public class NoteDetailViewPageFragment extends Fragment {
         OnError onError = new OnError() {
             @Override
             public void call(Exception e) {
-                // TODO: error handling
+                Rendering.showDropboxError();
             }
         };
 

@@ -150,6 +150,8 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+
+
         if (viewHolder instanceof NoteViewHolder) {
             bindViewHolder((NoteViewHolder)viewHolder, position);
         }
@@ -230,7 +232,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             OnError onError = new OnError() {
                 @Override
                 public void call(Exception e) {
-                    // TODO: error handling
+                    Rendering.showDropboxError();
                 }
             };
 
@@ -260,7 +262,7 @@ public class NoteListViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         OnError onError = new OnError() {
             @Override
             public void call(Exception e) {
-                // TODO: error handling
+                Rendering.showDropboxError();
             }
         };
         new AsyncWorkerTask<String>(worker, onSuccess, onError).execute();

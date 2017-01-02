@@ -223,7 +223,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
             OnError onError = new OnError() {
                 @Override
                 public void call(Exception e) {
-                    // TODO: error handling
+                    Rendering.showDropboxError();
                 }
             };
             dropboxStorage.retrieveFileList(_searchString, onSuccess, onError);
@@ -280,7 +280,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
             OnError onError = new OnError() {
                 @Override
                 public void call(Exception e) {
-                    // TODO: error handling
+                    Rendering.showDropboxError();
                 }
             };
             dropboxStorage.deleteNote(noteToDelete, onSuccess, onError);
@@ -312,7 +312,7 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
             OnError onError = new OnError() {
                 @Override
                 public void call(Exception e) {
-                    // TODO: error handling
+                    Rendering.showDropboxError();
                 }
             };
             dropboxStorage.saveNote(noteToRestore, false, onSuccess, onError);
