@@ -18,3 +18,5 @@
 
 -dontwarn okio.**
 -dontwarn com.dropbox.**
+
+-keep class android.support.v7.widget.SearchView { *; }

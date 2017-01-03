@@ -227,6 +227,9 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
                 }
             };
             dropboxStorage.retrieveFileList(_searchString, onSuccess, onError);
+        } else {
+            // Will have to re-try
+            _notesLoaded = false;
         }
     }
 
