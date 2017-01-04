@@ -61,20 +61,23 @@ public final class Rendering {
         return  safeText;
     }
 
+
+    // TODO: maybe the code below does not really belong here...
+
     // Remembers the last active toast related to dropbox connection errors.
     private static Toast dropboxErrorToast;
+
+    public static void initializeDropboxError(Context context) {
+        int duration = Toast.LENGTH_SHORT;
+        dropboxErrorToast = Toast.makeText(context, context.getText(R.string.dropbox_error), duration);
+    }
 
     /**
      * Shows the dropbox connection error message.
      */
     public static void showDropboxError() {
         if (dropboxErrorToast != null) {
-            dropboxErrorToast.cancel();
+            dropboxErrorToast.show();
         }
-
-        int duration = Toast.LENGTH_SHORT;
-        Context context = MyApplication.getAppContext();
-        dropboxErrorToast = Toast.makeText(context, context.getText(R.string.dropbox_error), duration);
-        dropboxErrorToast.show();
     }
 }

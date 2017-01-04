@@ -107,6 +107,9 @@ public class NoteListViewActivity extends AppCompatActivity implements MasterAct
         // Set up the empty view
         _emptyView = (TextView) findViewById(R.id.notes_view_empty_view);
 
+        // Set up the error reporter
+        Rendering.initializeDropboxError(getBaseContext());
+
         // Handle search intent
         // For example, after the screen is rotated, the activity is re-created and _searchString is null
         // So this line would restore it from the intent data
